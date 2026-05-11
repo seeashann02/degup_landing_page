@@ -512,11 +512,11 @@ const FAQ = () => {
       answer: "Dialysis is a lifelong treatment that affects many parts of a patient’s daily life, from employment to mobility and independence."
     },
     {
-      question: "Is my medical information safe with DEGUP?",
+      question: "Is my medical information safe with Degup?",
       answer: "Yes. DEGUP only collects the minimum necessary information required for scheduling and coordination purposes and follows Malaysia’s Personal Data Protection Act (PDPA) principles."
     },
     {
-      question: "Is DEGUP free to use?",
+      question: "Is Degup free to use?",
       answer: "DEGUP is currently in its pilot and validation phase. Some services may be offered free during this stage while we work closely with patients and providers to improve the platform experience."
     },
     {
