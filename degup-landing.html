@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEGUP</title>
+    <link rel="icon" type="image/png" href="https://github.com/seeashann02/Degup/blob/main/logo-transparent-without%20name.png?raw=true">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                fontFamily: {
+                    sans:    ['DM Sans', 'sans-serif'],
+                    display: ['Manrope', 'sans-serif'],
+                },
+                extend: {
+                    colors: {
+                        navy:     '#15153A',
+                        skyblue:  '#7CC7FF',
+                        lavender: '#DCCBFF',
+                        pink:     '#FFC6E3',
+                        ice:      '#D0F4FF',
+                        lgrey:    '#F5F6FA',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html { scroll-behavior: smooth; }
+
+        /* gradients */
+        .g-blue     { background: linear-gradient(135deg, #7CC7FF, #D0F4FF); }
+        .g-lav      { background: linear-gradient(135deg, #DCCBFF, #F6F0FF); }
+        .g-care     { background: linear-gradient(135deg, #FFB6D5, #7CC7FF); }
+        .g-pink     { background: linear-gradient(135deg, #FFC6E3, #FFB6D5); }
+
+        .hero-bg {
+            background: linear-gradient(160deg, #ffffff 0%, #F4F0FF 45%, #FFF0F8 100%);
+        }
+
+        /* floating animation */
+        @keyframes floatUp {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-10px); }
+        }
+        .float-1 { animation: floatUp 3.5s ease-in-out infinite; }
+        .float-2 { animation: floatUp 3.5s ease-in-out infinite; animation-delay: 1.8s; }
+
+        /* card hover lift */
+        .lift {
+            transition: transform .3s ease, box-shadow .3s ease;
+        }
+        .lift:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 24px 64px rgba(21,21,58,.10);
+        }
+
+        /* FAQ */
+        .faq-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .4s ease;
+        }
+        .faq-body.open { max-height: 400px; }
+        .faq-plus { transition: transform .3s ease; }
+        .faq-plus.open { transform: rotate(45deg); }
+
+        /* Apple-tight heading tracking */
+        h1, h2 { letter-spacing: -0.04em; }
+
+        /* Heading emphasis — no italic, brand sky blue */
+        h1 em, h2 em {
+            font-style: normal;
+            color: #2B87C8;
+        }
+
+        /* Frosted glass card — for dark sections */
+        .glass-card {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.13);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            transition: background .3s ease, border-color .3s ease, transform .3s ease, box-shadow .3s ease;
+        }
+        .glass-card:hover {
+            background: rgba(255,255,255,0.11);
+            border-color: rgba(255,255,255,0.22);
+            transform: translateY(-6px);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.35);
+        }
+
+        /* Dark section badge */
+        .section-badge-dark {
+            display: inline-block;
+            font-size: 11px; font-weight: 700;
+            letter-spacing: .16em; text-transform: uppercase;
+            color: rgba(255,255,255,.65);
+            border: 1px solid rgba(255,255,255,.2);
+            border-radius: 999px;
+            padding: 5px 16px;
+            background: rgba(255,255,255,.06);
+        }
+
+        /* Carousel dots — team section (white on dark) */
+        .carousel-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.35);
+            border: none; cursor: pointer; padding: 0;
+            transition: all .35s ease;
+        }
+        .carousel-dot.active-dot {
+            width: 26px;
+            border-radius: 4px;
+            background: #fff;
+        }
+
+        /* Vision carousel dots (navy on light) */
+        .vision-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: rgba(21,21,58,.20);
+            border: none; cursor: pointer; padding: 0;
+            transition: all .35s ease;
+        }
+        .vision-dot.active-vision-dot {
+            width: 26px;
+            border-radius: 4px;
+            background: #15153A;
+        }
+
+        /* ECG heartbeat animations */
+        @keyframes ecg-draw {
+            0%   { stroke-dashoffset: 900; opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 1; }
+            100% { stroke-dashoffset: 0; opacity: 0; }
+        }
+        @keyframes ecg-loop {
+            0%   { stroke-dashoffset: 900; }
+            100% { stroke-dashoffset: 0; }
+        }
+        .ecg-hero {
+            stroke-dasharray: 900;
+            animation: ecg-loop 5s linear infinite;
+            filter: drop-shadow(0 0 8px rgba(124,199,255,0.75));
+        }
+        .ecg-mini {
+            stroke-dasharray: 200;
+            animation: ecg-loop 2s linear infinite;
+            filter: drop-shadow(0 0 5px rgba(124,199,255,0.8));
+        }
+        @keyframes ecg-pulse-glow {
+            0%, 100% { opacity: .04; }
+            50%       { opacity: .09; }
+        }
+        .ecg-texture { animation: ecg-pulse-glow 4s ease-in-out infinite; }
+
+        /* section label */
+        .label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+
+        /* section badge pill */
+        .section-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: #15153A;
+            border: 1.5px solid #7CC7FF;
+            border-radius: 999px;
+            padding: 5px 16px;
+            background: rgba(124,199,255,.08);
+        }
+
+        /* FAQ cards */
+        .faq-card {
+            background: white;
+            border: 1px solid #edf0f7;
+            box-shadow: 0 1px 6px rgba(21,21,58,.04);
+            transition: box-shadow .25s ease, border-color .25s ease, transform .2s ease;
+        }
+        .faq-card:hover {
+            box-shadow: 0 8px 28px rgba(21,21,58,.08);
+            border-color: rgba(124,199,255,.5);
+            transform: translateY(-2px);
+        }
+        .faq-open-bar {
+            width: 3px;
+            border-radius: 0 2px 2px 0;
+            background: linear-gradient(180deg, #7CC7FF, #DCCBFF);
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            opacity: 0;
+            transition: opacity .25s ease;
+        }
+        .faq-card.is-open .faq-open-bar { opacity: 1; }
+
+        /* blob shape */
+        .blob { border-radius: 60% 40% 35% 65% / 55% 35% 65% 45%; }
+
+        /* soft scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f5f6fa; }
+        ::-webkit-scrollbar-thumb { background: #DCCBFF; border-radius: 10px; }
+    </style>
+</head>
+<body class="text-navy overflow-x-hidden">
+
+<!-- ─── NAV ─────────────────────────────────────────────── -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-white/85 backdrop-blur-md border-b border-gray-100">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+            <img src="https://github.com/seeashann02/Degup/blob/main/logo-transparent-without%20name.png?raw=true" alt="Degup logo" style="width:38px;height:38px;object-fit:contain;flex-shrink:0;">
+            <span class="font-display font-semibold text-xl tracking-tight">DEGUP</span>
+        </div>
+
+        <div class="hidden md:flex items-center gap-8">
+            <a href="#about"        class="text-sm text-gray-500 hover:text-navy transition-colors">About</a>
+            <a href="#how-it-works" class="text-sm text-gray-500 hover:text-navy transition-colors">How it works</a>
+            <a href="#faq"          class="text-sm text-gray-500 hover:text-navy transition-colors">FAQ</a>
+            <a href="https://wa.me/601154448699?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda."
+               class="bg-navy text-white text-sm px-5 py-2.5 rounded-full hover:opacity-90 transition-all shadow-sm">
+                Talk to us
+            </a>
+        </div>
+
+        <button class="md:hidden" onclick="document.getElementById('mob-nav').classList.toggle('hidden')">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 11h16M3 6h16M3 16h16"/>
+            </svg>
+        </button>
+    </div>
+    <div id="mob-nav" class="hidden md:hidden bg-white border-t border-gray-100 px-6 py-5 flex flex-col gap-4">
+        <a href="#about"        class="text-sm text-gray-600">About</a>
+        <a href="#how-it-works" class="text-sm text-gray-600">How it works</a>
+        <a href="#faq"          class="text-sm text-gray-600">FAQ</a>
+        <a href="https://wa.me/601154448699?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda." class="bg-navy text-white text-sm px-5 py-3 rounded-full text-center">Talk to us</a>
+    </div>
+</nav>
+
+
+<!-- ─── HERO ─────────────────────────────────────────────── -->
+<section class="min-h-screen relative overflow-hidden flex items-center justify-center">
+
+    <!-- full-bleed background image -->
+    <img src="https://www.maaedicare.org/wp-content/uploads/2026/01/Maaedicare-Dialysis-Malaysia-1536x1024.jpg"
+         alt="Dialysis patient" referrerpolicy="no-referrer"
+         class="absolute inset-0 w-full h-full object-cover object-center">
+
+    <!-- cinematic dark overlay — warm, not cold -->
+    <div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(8,8,24,0.52) 0%, rgba(8,8,24,0.38) 45%, rgba(8,8,24,0.72) 100%);"></div>
+
+    <!-- centered content -->
+    <div class="relative z-10 text-center max-w-4xl mx-auto px-6 pt-24">
+
+        <!-- live badge -->
+        <div class="inline-flex items-center gap-2 rounded-full px-4 py-2 mb-10 text-xs" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.75);backdrop-filter:blur(12px);">
+            <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+            Helping patients across Malaysia
+        </div>
+
+        <h1 class="font-display text-6xl md:text-8xl font-bold leading-[1.04] mb-7 text-white">
+            Connecting with<br>
+            <em class="not-italic" style="background: linear-gradient(120deg,#7CC7FF,#DCCBFF,#FFC6E3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">
+                Care
+            </em>
+        </h1>
+
+        <p class="text-lg md:text-xl leading-relaxed max-w-xl mx-auto mb-12" style="color:rgba(255,255,255,.62);">
+            Helping dialysis patients take back control of their lives with flexible, accessible treatment that fits their daily routines.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="#how-it-works"
+               class="bg-white text-navy px-10 py-4 rounded-full font-semibold hover:bg-opacity-90 hover:shadow-2xl transition-all text-sm">
+                Talk to Us
+            </a>
+            <a href="https://www.youtube.com/watch?v=brxf_f5mjm4"
+               class="px-10 py-4 rounded-full font-semibold border transition-all text-sm text-white"
+               style="border-color:rgba(255,255,255,.35);backdrop-filter:blur(8px);background:rgba(255,255,255,.08);">
+                See our story →
+            </a>
+        </div>
+    </div>
+
+    <!-- ECG hero line — glows on the dark overlay -->
+    <div class="absolute bottom-24 left-0 right-0 pointer-events-none overflow-hidden">
+        <svg width="100%" height="70" viewBox="0 0 1440 70" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path class="ecg-hero"
+                  d="M0,35 L160,35 L175,33 L185,35 L193,35 L197,8 L201,62 L205,35 L215,44 L230,35
+                     L390,35 L405,33 L415,35 L423,35 L427,8 L431,62 L435,35 L445,44 L460,35
+                     L620,35 L635,33 L645,35 L653,35 L657,8 L661,62 L665,35 L675,44 L690,35
+                     L850,35 L865,33 L875,35 L883,35 L887,8 L891,62 L895,35 L905,44 L920,35
+                     L1080,35 L1095,33 L1105,35 L1113,35 L1117,8 L1121,62 L1125,35 L1135,44 L1150,35
+                     L1310,35 L1325,33 L1335,35 L1343,35 L1347,8 L1351,62 L1355,35 L1365,44 L1440,35"
+                  stroke="url(#ecg-grad-hero)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+                <linearGradient id="ecg-grad-hero" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%"   stop-color="#7CC7FF"/>
+                    <stop offset="50%"  stop-color="#DCCBFF"/>
+                    <stop offset="100%" stop-color="#FFC6E3"/>
+                </linearGradient>
+            </defs>
+        </svg>
+    </div>
+
+    <!-- scroll cue -->
+</section>
+
+
+<!-- ─── PROBLEM ───────────────────────────────────────────── -->
+<section class="py-28 relative overflow-hidden" style="background:linear-gradient(180deg,#ffffff 0%,#F4F6FB 50%,#ffffff 100%)">
+
+    <!-- decorative blobs -->
+    <div class="absolute top-0 left-0 w-96 h-96 rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(124,199,255,.12) 0%,transparent 70%);transform:translate(-30%,-30%)"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(220,203,255,.12) 0%,transparent 70%);transform:translate(30%,30%)"></div>
+
+    <div class="relative max-w-6xl mx-auto px-6">
+        <div class="text-center mb-20">
+            <p class="mb-5"><span class="section-badge">The Challenge</span></p>
+            <h2 class="font-display text-4xl md:text-[3.2rem] font-bold text-navy leading-tight mb-5">
+                Dialysis is already difficult<br>
+                <em>scheduling shouldn't be</em>
+            </h2>
+            <p class="text-gray-400 text-lg max-w-lg mx-auto leading-relaxed">
+                We are solving the coordination gaps that make treatment a barrier to daily life.
+            </p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <!-- 1 -->
+            <div class="lift rounded-3xl bg-white overflow-hidden" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
+                <div style="height:3px;background:linear-gradient(90deg,#7CC7FF,#D0F4FF);"></div>
+                <div class="p-8">
+                    <div class="flex items-start justify-between mb-7">
+                        <div class="w-14 h-14 g-blue rounded-2xl flex items-center justify-center shadow-sm">
+                            <svg width="26" height="26" fill="none" stroke="white" stroke-width="2.2">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                <path d="M16 2v4M8 2v4M3 10h18"/>
+                            </svg>
+                        </div>
+                        <span class="font-display font-black text-6xl leading-none" style="color:rgba(21,21,58,.04);"></span>
+                    </div>
+                    <h3 class="font-semibold text-navy text-lg mb-3">Work Schedule</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Dialysis slots must work with <em class="not-italic font-medium text-gray-500">your</em> schedule, not the other way around.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 2 -->
+            <div class="lift rounded-3xl bg-white overflow-hidden" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
+                <div style="height:3px;background:linear-gradient(90deg,#DCCBFF,#F6F0FF);"></div>
+                <div class="p-8">
+                    <div class="flex items-start justify-between mb-7">
+                        <div class="w-14 h-14 g-lav rounded-2xl flex items-center justify-center shadow-sm">
+                            <svg width="26" height="26" fill="none" stroke="white" stroke-width="2.2">
+                                <circle cx="11" cy="11" r="7"/>
+                                <path d="m21 21-4.3-4.3"/>
+                            </svg>
+                        </div>
+                        <span class="font-display font-black text-6xl leading-none" style="color:rgba(21,21,58,.04);"></span>
+                    </div>
+                    <h3 class="font-semibold text-navy text-lg mb-3">Limited Visibility</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Patients have no sight to the nearest vacant slots in real time.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 3 -->
+            <div class="lift rounded-3xl bg-white overflow-hidden" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
+                <div style="height:3px;background:linear-gradient(90deg,#FFC6E3,#FFB6D5);"></div>
+                <div class="p-8">
+                    <div class="flex items-start justify-between mb-7">
+                        <div class="w-14 h-14 g-pink rounded-2xl flex items-center justify-center shadow-sm">
+                            <svg width="26" height="26" fill="none" stroke="white" stroke-width="2.2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.8 19.8 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72 12.8 12.8 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.78a16 16 0 0 0 6.29 6.29l.94-.94a2 2 0 0 1 2.11-.45c.907.34 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                        </div>
+                        <span class="font-display font-black text-6xl leading-none" style="color:rgba(21,21,58,.04);"></span>
+                    </div>
+                    <h3 class="font-semibold text-navy text-lg mb-3">Manual Booking</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Calling multiple numbers just to find a single empty slot is exhausting.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 4 -->
+            <div class="lift rounded-3xl bg-white overflow-hidden" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
+                <div style="height:3px;background:linear-gradient(90deg,#7CC7FF,#DCCBFF);"></div>
+                <div class="p-8">
+                    <div class="flex items-start justify-between mb-7">
+                        <div class="w-14 h-14 g-care rounded-2xl flex items-center justify-center shadow-sm">
+                            <svg width="26" height="26" fill="none" stroke="white" stroke-width="2.2">
+                                <path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/>
+                            </svg>
+                        </div>
+                        <span class="font-display font-black text-6xl leading-none" style="color:rgba(21,21,58,.04);"></span>
+                    </div>
+                    <h3 class="font-semibold text-navy text-lg mb-3">Travel Barriers</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Commuting challenges that prevent patients from accessing care and information.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ─── MISSION / ABOUT ───────────────────────────────────── -->
+<section id="about" class="py-28 bg-white overflow-hidden">
+    <div class="max-w-7xl mx-auto px-8">
+        <div class="grid md:grid-cols-[1.1fr_0.9fr] gap-14 items-center">
+
+            <!-- image side — vision carousel -->
+            <div class="relative order-2 md:order-1">
+
+                <!-- decorative blob behind carousel -->
+                <div class="absolute -inset-6 rounded-[48px] pointer-events-none"
+                     style="background:linear-gradient(135deg,rgba(124,199,255,.13),rgba(220,203,255,.13));filter:blur(2px);z-index:0;"></div>
+
+                <div class="relative z-10">
+                    <!-- carousel frame -->
+                    <div class="aspect-[4/3] rounded-[28px] overflow-hidden relative"
+                         style="box-shadow:0 24px 64px rgba(21,21,58,.14);">
+                        <!-- slides strip -->
+                        <div id="vision-carousel" class="flex h-full"
+                             style="transition: transform .7s cubic-bezier(.4,0,.2,1); transform: translateX(0%);">
+
+                            <!-- Slide 1 -->
+                            <div class="flex-shrink-0 w-full h-full">
+                                <img src="https://github.com/seeashann02/Degup/blob/main/KKM.jpeg?raw=true"
+                                     class="w-full h-full object-cover object-center" alt="KKM" referrerpolicy="no-referrer">
+                            </div>
+                            <!-- Slide 2 -->
+                            <div class="flex-shrink-0 w-full h-full">
+                                <img src="https://github.com/seeashann02/Degup/blob/main/Medicare.jpeg?raw=true"
+                                     class="w-full h-full object-cover object-center" alt="Medicare" referrerpolicy="no-referrer">
+                            </div>
+                            <!-- Slide 3 -->
+                            <div class="flex-shrink-0 w-full h-full">
+                                <img src="https://github.com/seeashann02/Degup/blob/main/ngo.png?raw=true"
+                                     class="w-full h-full object-cover object-center" alt="NGO" referrerpolicy="no-referrer">
+                            </div>
+                            <!-- Slide 4 -->
+                            <div class="flex-shrink-0 w-full h-full">
+                                <img src="https://github.com/seeashann02/Degup/blob/main/nkf.jpeg?raw=true"
+                                     class="w-full h-full object-cover object-center" alt="NKF" referrerpolicy="no-referrer">
+                            </div>
+                            <!-- Slide 5 -->
+                            <div class="flex-shrink-0 w-full h-full">
+                                <img src="https://github.com/seeashann02/Degup/blob/main/WhatsApp%20Image%202026-05-06%20at%2010.08.56.jpeg?raw=true"
+                                     class="w-full h-full object-cover object-center" alt="Community" referrerpolicy="no-referrer">
+                            </div>
+                        </div>
+
+                        <!-- Prev arrow -->
+                        <button onclick="visionPrev()"
+                                class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center z-10 transition-all hover:scale-110"
+                                style="background:rgba(255,255,255,.7);backdrop-filter:blur(8px);">
+                            <svg width="16" height="16" fill="none" stroke="#15153A" stroke-width="2.5" stroke-linecap="round">
+                                <path d="M10 4L6 8l4 4"/>
+                            </svg>
+                        </button>
+                        <!-- Next arrow -->
+                        <button onclick="visionNext()"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center z-10 transition-all hover:scale-110"
+                                style="background:rgba(255,255,255,.7);backdrop-filter:blur(8px);">
+                            <svg width="16" height="16" fill="none" stroke="#15153A" stroke-width="2.5" stroke-linecap="round">
+                                <path d="M6 4l4 4-4 4"/>
+                            </svg>
+                        </button>
+
+                        <!-- Dot indicators -->
+                        <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
+                            <button class="vision-dot active-vision-dot" onclick="visionGoTo(0)"></button>
+                            <button class="vision-dot"                   onclick="visionGoTo(1)"></button>
+                            <button class="vision-dot"                   onclick="visionGoTo(2)"></button>
+                            <button class="vision-dot"                   onclick="visionGoTo(3)"></button>
+                            <button class="vision-dot"                   onclick="visionGoTo(4)"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- copy side -->
+            <div class="order-1 md:order-2">
+                <p class="mb-5"><span class="section-badge">Our Vision</span></p>
+                <h2 class="font-display text-4xl md:text-[3.1rem] font-bold text-navy leading-tight mb-7">
+                    A healthcare ecosystem<br>
+                    <em>built for the patient</em>
+                </h2>
+
+                <!-- accent rule -->
+                <div class="w-12 h-0.5 mb-7" style="background:linear-gradient(90deg,#7CC7FF,#DCCBFF);"></div>
+
+                <p class="text-gray-500 leading-relaxed mb-5">
+                    We envision a future where dialysis treatment is no longer a logistical burden but a seamless part of a patient's life.
+                </p>
+                <p class="text-gray-500 leading-relaxed mb-10">
+                    Degup is bridging the gap between clinical needs and personal freedom, one new breath at a time.
+                </p>
+
+                <div class="flex flex-wrap gap-3">
+                    <span class="section-badge">Patient-first</span>
+                    <span class="section-badge">Community-driven</span>
+                    <span class="section-badge">Made with heart</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ─── HOW IT WORKS ──────────────────────────────────────── -->
+<section id="how-it-works" class="py-28 relative overflow-hidden" style="background:#f5f5f7;">
+    <div class="max-w-6xl mx-auto px-6 relative">
+        <div class="text-center mb-16">
+            <p class="mb-4"><span class="section-badge">How it works</span></p>
+            <h2 class="font-display text-4xl md:text-5xl font-bold text-navy mb-4">
+                Three steps to <em>better care</em>
+            </h2>
+            <p class="text-base max-w-md mx-auto leading-relaxed text-gray-400">
+                Simple, flexible, and built around your schedule.
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+
+            <!-- Step 1 -->
+            <div class="bg-white rounded-3xl p-10 lift" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
+                <div class="w-14 h-14 g-blue rounded-2xl flex items-center justify-center mb-6">
+                    <svg width="22" height="22" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round">
+                        <circle cx="11" cy="11" r="9"/>
+                        <path d="M11 7v4l3 3"/>
+                    </svg>
+                </div>
+                <div class="text-xs font-bold tracking-widest uppercase mb-3" style="color:#7CC7FF;">Step 01</div>
+                <h3 class="font-display font-bold text-navy text-xl mb-3">Discover Nearby Slots</h3>
+                <p class="text-gray-400 leading-relaxed text-base">
+                    Explore dialysis centres and available treatment slots based on your location and timing preferences.
+                </p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="bg-white rounded-3xl p-10 lift" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
+                <div class="w-14 h-14 g-lav rounded-2xl flex items-center justify-center mb-6">
+                    <svg width="22" height="22" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round">
+                        <rect x="3" y="4" width="16" height="16" rx="2"/>
+                        <path d="M16 2v3M8 2v3M3 10h16M8 14h.01M12 14h.01M8 17h.01"/>
+                    </svg>
+                </div>
+                <div class="text-xs font-bold tracking-widest uppercase mb-3" style="color:#DCCBFF;">Step 02</div>
+                <h3 class="font-display font-bold text-navy text-xl mb-3">Flexible Scheduling</h3>
+                <p class="text-gray-400 leading-relaxed text-base">
+                    Select a session that fits your unique work and life routine — on your own terms.
+                </p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="bg-white rounded-3xl p-10 lift" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
+                <div class="w-14 h-14 g-pink rounded-2xl flex items-center justify-center mb-6">
+                    <svg width="22" height="22" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/>
+                        <circle cx="10" cy="7" r="4"/>
+                        <path d="M19 8v6M22 11h-6"/>
+                    </svg>
+                </div>
+                <div class="text-xs font-bold tracking-widest uppercase mb-3" style="color:#FFC6E3;">Step 03</div>
+                <h3 class="font-display font-bold text-navy text-xl mb-3">Seamless Coordination</h3>
+                <p class="text-gray-400 leading-relaxed text-base">
+                    Get supported through the entire booking and treatment cycle, every step of the way.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ─── COMMUNITY / TEAM ──────────────────────────────────── -->
+<section class="py-28 relative overflow-hidden" style="background:linear-gradient(160deg,#15153A 0%,#1C1C4A 100%)">
+    <!-- subtle ECG texture background -->
+    <div class="absolute inset-0 pointer-events-none ecg-texture">
+        <svg width="100%" height="100%" viewBox="0 0 1440 500" preserveAspectRatio="xMidYMid slice" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- row 1 -->
+            <path d="M0,120 L180,120 L195,118 L205,120 L210,120 L214,98 L218,142 L222,120 L232,128 L248,120 L420,120 L435,118 L445,120 L450,120 L454,98 L458,142 L462,120 L472,128 L488,120 L660,120 L675,118 L685,120 L690,120 L694,98 L698,142 L702,120 L712,128 L728,120 L900,120 L915,118 L925,120 L930,120 L934,98 L938,142 L942,120 L952,128 L968,120 L1140,120 L1155,118 L1165,120 L1170,120 L1174,98 L1178,142 L1182,120 L1192,128 L1208,120 L1440,120"
+                  stroke="white" stroke-width="1" stroke-linecap="round"/>
+            <!-- row 2 -->
+            <path d="M0,260 L180,260 L195,258 L205,260 L210,260 L214,238 L218,282 L222,260 L232,268 L248,260 L420,260 L435,258 L445,260 L450,260 L454,238 L458,282 L462,260 L472,268 L488,260 L660,260 L675,258 L685,260 L690,260 L694,238 L698,282 L702,260 L712,268 L728,260 L900,260 L915,258 L925,260 L930,260 L934,238 L938,282 L942,260 L952,268 L968,260 L1140,260 L1155,258 L1165,260 L1170,260 L1174,238 L1178,282 L1182,260 L1192,268 L1208,260 L1440,260"
+                  stroke="white" stroke-width="1" stroke-linecap="round"/>
+            <!-- row 3 -->
+            <path d="M0,400 L180,400 L195,398 L205,400 L210,400 L214,378 L218,422 L222,400 L232,408 L248,400 L420,400 L435,398 L445,400 L450,400 L454,378 L458,422 L462,400 L472,408 L488,400 L660,400 L675,398 L685,400 L690,400 L694,378 L698,422 L702,400 L712,408 L728,400 L900,400 L915,398 L925,400 L930,400 L934,378 L938,422 L942,400 L952,408 L968,400 L1140,400 L1155,398 L1165,400 L1170,400 L1174,378 L1178,422 L1182,400 L1192,408 L1208,400 L1440,400"
+                  stroke="white" stroke-width="1" stroke-linecap="round"/>
+        </svg>
+    </div>
+    <div class="max-w-6xl mx-auto px-6 relative">
+        <div class="grid md:grid-cols-2 gap-20 items-center">
+
+            <!-- copy -->
+            <div>
+                <p class="label mb-5" style="color:#7CC7FF">Who we are</p>
+                <h2 class="font-display text-4xl md:text-[3.1rem] font-bold text-white leading-tight mb-7">
+                    Built for communities,<br>
+                    <em style="color:#7CC7FF;font-style:normal;">powered by heart.</em>
+                </h2>
+                <p class="leading-relaxed mb-5" style="color:rgba(255,255,255,.6)">
+                    Degup is a multidisciplinary team from the SEEd.Lab Social Enterprise Programme, powered by PETRONAS and TCS. We are dedicated to redefining dialysis care access in Malaysia.
+                </p>
+                <p class="leading-relaxed mb-12" style="color:rgba(255,255,255,.6)">
+                    Our approach combines deep technical expertise with a genuine commitment to community impact. We believe in technology that truly serves humanity.
+                </p>
+
+            </div>
+
+            <!-- team photo -->
+            <div class="relative">
+                <div class="rounded-3xl overflow-hidden aspect-[4/3] relative">
+                    <img src="https://github.com/seeashann02/Degup/blob/main/grouppic.jpg?raw=true" alt="The Degup Team" class="w-full h-full object-cover object-top" referrerpolicy="no-referrer">
+                    <div class="absolute top-4 left-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
+                        <p class="text-white text-xs font-semibold tracking-wide">Our Team</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ─── FOUNDERS ─────────────────────────────────────────── -->
+<section class="py-28" style="background:#F8F9FC;">
+    <div class="max-w-7xl mx-auto px-6">
+
+        <div class="text-center mb-16">
+            <p class="mb-4"><span class="section-badge">Meet the Team</span></p>
+            <h2 class="font-display text-4xl md:text-5xl font-bold text-navy leading-tight">
+                The people <em>behind Degup</em>
+            </h2>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
+
+            <!-- Eeashann -->
+            <div class="lift rounded-2xl overflow-hidden flex flex-col" style="box-shadow:0 4px 24px rgba(21,21,58,.09);">
+                <div class="relative overflow-hidden" style="background:linear-gradient(160deg,#E8F4FF 0%,#EDE8FF 100%);aspect-ratio:3/4;">
+                    <img src="https://github.com/seeashann02/Degup/blob/main/teampic/Eeashann.png?raw=true"
+                         alt="Eeashann" class="absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer">
+                </div>
+                <div class="bg-white px-4 pt-4 pb-5 flex-1">
+                    <h3 class="font-display font-bold text-navy text-sm leading-tight">Eeashann</h3>
+                    <p class="text-[11px] font-bold tracking-wide uppercase mt-0.5 mb-2.5" style="color:#7CC7FF;">Co-Founder</p>
+                    <div class="w-6 h-0.5 mb-2.5 rounded-full" style="background:#7CC7FF;opacity:.4;"></div>
+                    <p class="text-gray-400 text-[11px] leading-relaxed">Software Engineer and Founder passionate about scaling developer networks and community-centric ventures.</p>
+                </div>
+            </div>
+
+            <!-- Athirah -->
+            <div class="lift rounded-2xl overflow-hidden flex flex-col" style="box-shadow:0 4px 24px rgba(21,21,58,.09);">
+                <div class="relative overflow-hidden" style="background:linear-gradient(160deg,#E8F4FF 0%,#EDE8FF 100%);aspect-ratio:3/4;">
+                    <img src="https://github.com/seeashann02/Degup/blob/main/teampic/Athirah.png?raw=true"
+                         alt="Athirah" class="absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer">
+                </div>
+                <div class="bg-white px-4 pt-4 pb-5 flex-1">
+                    <h3 class="font-display font-bold text-navy text-sm leading-tight">Athirah</h3>
+                    <p class="text-[11px] font-bold tracking-wide uppercase mt-0.5 mb-2.5" style="color:#7CC7FF;">Co-Founder</p>
+                    <div class="w-6 h-0.5 mb-2.5 rounded-full" style="background:#7CC7FF;opacity:.4;"></div>
+                    <p class="text-gray-400 text-[11px] leading-relaxed">Legal Professional with 6 years' experience in litigation, negotiation, and strategic advisory.</p>
+                </div>
+            </div>
+
+            <!-- Leon -->
+            <div class="lift rounded-2xl overflow-hidden flex flex-col" style="box-shadow:0 4px 24px rgba(21,21,58,.09);">
+                <div class="relative overflow-hidden" style="background:linear-gradient(160deg,#E8F4FF 0%,#EDE8FF 100%);aspect-ratio:3/4;">
+                    <img src="https://github.com/seeashann02/Degup/blob/main/teampic/Leon.png?raw=true"
+                         alt="Leon" class="absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer">
+                </div>
+                <div class="bg-white px-4 pt-4 pb-5 flex-1">
+                    <h3 class="font-display font-bold text-navy text-sm leading-tight">Leon</h3>
+                    <p class="text-[11px] font-bold tracking-wide uppercase mt-0.5 mb-2.5" style="color:#7CC7FF;">Co-Founder</p>
+                    <div class="w-6 h-0.5 mb-2.5 rounded-full" style="background:#7CC7FF;opacity:.4;"></div>
+                    <p class="text-gray-400 text-[11px] leading-relaxed">Master's in I/O Behavior Management, Western Michigan University. Startup, non-profit & corporate experience.</p>
+                </div>
+            </div>
+
+            <!-- Nash -->
+            <div class="lift rounded-2xl overflow-hidden flex flex-col" style="box-shadow:0 4px 24px rgba(21,21,58,.09);">
+                <div class="relative overflow-hidden" style="background:linear-gradient(160deg,#E8F4FF 0%,#EDE8FF 100%);aspect-ratio:3/4;">
+                    <img src="https://github.com/seeashann02/Degup/blob/main/teampic/Nash.png?raw=true"
+                         alt="Nash" class="absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer">
+                </div>
+                <div class="bg-white px-4 pt-4 pb-5 flex-1">
+                    <h3 class="font-display font-bold text-navy text-sm leading-tight">Nash</h3>
+                    <p class="text-[11px] font-bold tracking-wide uppercase mt-0.5 mb-2.5" style="color:#7CC7FF;">Co-Founder</p>
+                    <div class="w-6 h-0.5 mb-2.5 rounded-full" style="background:#7CC7FF;opacity:.4;"></div>
+                    <p class="text-gray-400 text-[11px] leading-relaxed">Ecosystem Builder and Serial Entrepreneur enabling startup founders across SEA.</p>
+                </div>
+            </div>
+
+            <!-- Lydia -->
+            <div class="lift rounded-2xl overflow-hidden flex flex-col" style="box-shadow:0 4px 24px rgba(21,21,58,.09);">
+                <div class="relative overflow-hidden" style="background:linear-gradient(160deg,#E8F4FF 0%,#EDE8FF 100%);aspect-ratio:3/4;">
+                    <img src="https://github.com/seeashann02/Degup/blob/main/teampic/Lydia.png?raw=true"
+                         alt="Lydia" class="absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer">
+                </div>
+                <div class="bg-white px-4 pt-4 pb-5 flex-1">
+                    <h3 class="font-display font-bold text-navy text-sm leading-tight">Lydia</h3>
+                    <p class="text-[11px] font-bold tracking-wide uppercase mt-0.5 mb-2.5" style="color:#7CC7FF;">Co-Founder</p>
+                    <div class="w-6 h-0.5 mb-2.5 rounded-full" style="background:#7CC7FF;opacity:.4;"></div>
+                    <p class="text-gray-400 text-[11px] leading-relaxed">Serial Entrepreneur with 8 years in business management and finance, building impact-driven ventures.</p>
+                </div>
+            </div>
+
+            <!-- Haziq -->
+            <div class="lift rounded-2xl overflow-hidden flex flex-col" style="box-shadow:0 4px 24px rgba(21,21,58,.09);">
+                <div class="relative overflow-hidden" style="background:linear-gradient(160deg,#E8F4FF 0%,#EDE8FF 100%);aspect-ratio:3/4;">
+                    <img src="https://github.com/seeashann02/Degup/blob/main/teampic/Haziq.png?raw=true"
+                         alt="Haziq" class="absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer">
+                </div>
+                <div class="bg-white px-4 pt-4 pb-5 flex-1">
+                    <h3 class="font-display font-bold text-navy text-sm leading-tight">Haziq</h3>
+                    <p class="text-[11px] font-bold tracking-wide uppercase mt-0.5 mb-2.5" style="color:#7CC7FF;">Co-Founder</p>
+                    <div class="w-6 h-0.5 mb-2.5 rounded-full" style="background:#7CC7FF;opacity:.4;"></div>
+                    <p class="text-gray-400 text-[11px] leading-relaxed">Social Worker with 8 years across government agencies, NGOs, and community development.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ─── PARTNERS ──────────────────────────────────────────── -->
+<section class="py-24 bg-white">
+    <div class="max-w-3xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <p class="mb-4"><span class="section-badge">Ecosystem Partners</span></p>
+        </div>
+        <!-- main card — clickable -->
+        <a href="https://www.seedlab.my/" target="_blank" rel="noopener noreferrer"
+           class="block bg-lgrey rounded-[32px] p-10 transition-all hover:shadow-lg hover:bg-white">
+            <img src="https://www.toruslabs.my/images/logo/seed.lab-block-logo-hr.webp" alt="SEEd.Lab" class="w-full h-auto" referrerpolicy="no-referrer">
+        </a>
+
+        <!-- bottom caption -->
+        <p class="text-center mt-8 text-xs font-bold tracking-[.18em] uppercase text-gray-300">
+            Powered by SEEd.Lab &bull; PETRONAS &bull; TCS
+        </p>
+    </div>
+</section>
+
+
+<!-- ─── CTA ───────────────────────────────────────────────── -->
+<section class="py-28 relative overflow-hidden" style="background:linear-gradient(160deg,#15153A 0%,#1C1C4A 100%)">
+    <div class="absolute inset-0 opacity-20"
+         style="background:radial-gradient(ellipse at 70% 50%,#7CC7FF 0%,transparent 55%)"></div>
+
+    <div class="relative max-w-4xl mx-auto px-6 text-center">
+        <h2 class="font-display text-5xl md:text-6xl font-bold text-white leading-tight mb-7">
+            Let's shape the<br><em style="color:#7CC7FF;font-style:normal;">future together</em>
+        </h2>
+        <p class="text-lg max-w-2xl mx-auto mb-12 leading-relaxed" style="color:rgba(255,255,255,.6)">
+            We are connecting with healthcare stakeholders and dialysis providers to redefine care coordination in Malaysia.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="mailto:hello@degup.com"
+               class="bg-white text-navy px-10 py-4 rounded-full font-medium shadow-xl hover:shadow-2xl transition-all text-sm">
+                Talk to us →
+            </a>
+            <a href="mailto:partner@degup.com"
+               class="text-white px-10 py-4 rounded-full font-medium border transition-all text-sm hover:bg-white/10"
+               style="border-color:rgba(255,255,255,.3)">
+                Become a partner
+            </a>
+        </div>
+    </div>
+</section>
+
+
+<!-- ─── FAQ ───────────────────────────────────────────────── -->
+<section id="faq" class="py-28 bg-white">
+
+    <div class="max-w-6xl mx-auto px-6">
+
+        <!-- centred top header -->
+        <div class="text-center mb-16">
+            <p class="mb-4"><span class="section-badge">Got questions?</span></p>
+            <h2 class="font-display text-4xl md:text-5xl font-bold text-navy leading-tight mb-4">
+                Everything you need to <em>know</em>
+            </h2>
+            <p class="text-gray-400 max-w-md mx-auto leading-relaxed">
+                Can't find what you're looking for? Reach out and we'll get back to you.
+            </p>
+        </div>
+
+        <!-- two-col accordion -->
+        <div class="grid md:grid-cols-2 gap-5 mb-14" id="faq-list"></div>
+
+        <!-- CTA row -->
+        <div class="text-center">
+            <a href="https://wa.me/601154448699?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda." target="_blank"
+               class="inline-flex items-center gap-2 bg-navy text-white px-7 py-3.5 rounded-full text-sm font-semibold hover:opacity-90 transition-all shadow-lg">
+                Ask us directly →
+            </a>
+        </div>
+    </div>
+</section>
+
+
+<!-- ─── FOOTER ────────────────────────────────────────────── -->
+<footer class="py-16" style="background:#15153A">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="grid md:grid-cols-3 gap-12 mb-14">
+            <!-- brand -->
+            <div>
+                <div class="flex items-center gap-2.5 mb-4">
+                    <img src="https://github.com/seeashann02/Degup/blob/main/logo-transparent-without%20name.png?raw=true" alt="Degup logo" style="width:38px;height:38px;object-fit:contain;flex-shrink:0;">
+                    <span class="font-display font-semibold text-xl text-white tracking-tight">DEGUP</span>
+                </div>
+                <p class="text-sm leading-relaxed mb-6" style="color:rgba(255,255,255,.4)">
+                    Making dialysis scheduling simpler and easier for patients in Malaysia.
+                </p>
+                <!-- social icons -->
+                <div class="flex items-center gap-3">
+                    <!-- Facebook -->
+                    <a href="https://www.facebook.com/dialisdankerjaya" target="_blank" rel="noopener noreferrer"
+                       class="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:bg-white/20"
+                       style="background:rgba(255,255,255,.08)">
+                        <svg width="16" height="16" fill="white" viewBox="0 0 24 24">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                        </svg>
+                    </a>
+                    <!-- Instagram -->
+                    <a href="https://www.instagram.com/degup.my" target="_blank" rel="noopener noreferrer"
+                       class="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:bg-white/20"
+                       style="background:rgba(255,255,255,.08)">
+                        <svg width="16" height="16" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 24 24">
+                            <rect x="2" y="2" width="20" height="20" rx="5"/>
+                            <circle cx="12" cy="12" r="4"/>
+                            <circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none"/>
+                        </svg>
+                    </a>
+                    <!-- TikTok -->
+                    <a href="https://www.tiktok.com/@dialisisdankerjaya" target="_blank" rel="noopener noreferrer"
+                       class="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:bg-white/20"
+                       style="background:rgba(255,255,255,.08)">
+                        <svg width="16" height="16" fill="white" viewBox="0 0 24 24">
+                            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <!-- contacts -->
+            <div>
+                <p class="text-xs font-semibold text-white mb-4 tracking-wider uppercase">Contacts</p>
+                <ul class="space-y-2">
+                    <li><a href="mailto:hello@degup.my" class="text-sm hover:text-white transition-colors" style="color:rgba(255,255,255,.4)">hello@degup.my</a></li>
+                    <li><a href="tel:+60132370520"       class="text-sm hover:text-white transition-colors" style="color:rgba(255,255,255,.4)">+60 13 237 0520</a></li>
+                </ul>
+            </div>
+            <!-- location -->
+            <div>
+                <p class="text-xs font-semibold text-white mb-4 tracking-wider uppercase">Location</p>
+                <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,.4)">
+                    Level 2, Tower 3, Bangsar South City,<br>
+                    59200, Kuala Lumpur, Malaysia
+                </p>
+            </div>
+        </div>
+
+        <div class="border-t flex flex-col md:flex-row justify-between items-center gap-3 pt-8"
+             style="border-color:rgba(255,255,255,.08)">
+            <p class="text-xs" style="color:rgba(255,255,255,.25)">© 2026 Degup</p>
+            <p class="text-xs" style="color:rgba(255,255,255,.25)">A SEEd.Lab Social Enterprise</p>
+        </div>
+    </div>
+</footer>
+
+
+<!-- ─── SCRIPTS ───────────────────────────────────────────── -->
+<script>
+const faqs = [
+    { q: "What is Degup?",
+      a: "Degup is a social enterprise focused on making dialysis care easier and more accessible for patients in Malaysia." },
+    { q: "Why was Degup started?",
+      a: "Degup was inspired by the real challenges dialysis patients face in managing treatment around work, daily life, and travel." },
+    { q: "What problem is Degup trying to solve?",
+      a: "Many dialysis patients struggle with rigid schedules, limited flexibility, and difficult coordination when accessing treatment. Degup aims to improve this experience." },
+    { q: "Who does Degup support?",
+      a: "Degup focuses on supporting dialysis patients, caregivers, and dialysis providers." },
+    { q: "Why focus on dialysis patients?",
+      a: "Dialysis is a lifelong treatment that affects many parts of a patient's daily life, from employment to mobility and independence." },
+    { q: "Is my medical information safe with Degup?",
+      a: "Yes. Degup only collects the minimum necessary information required for scheduling and coordination purposes and follows Malaysia's Personal Data Protection Act (PDPA) principles." },
+    { q: "Is Degup free to use?",
+      a: "Degup is currently in its pilot and validation phase. Some services may be offered free during this stage while we work closely with patients and providers to improve the platform experience." },
+    { q: "Is Degup a charity?",
+      a: "No. Degup is a social enterprise focused on building sustainable solutions that improve access to dialysis care." },
+    { q: "What is a social enterprise?",
+      a: "A social enterprise is a business or initiative that focuses on solving social problems while building sustainable and long-term impact." },
+    { q: "Where is Degup based?",
+      a: "Degup is based in KL but focuses on improving dialysis access for patients across Malaysia." },
+    { q: "What is SEEd.Lab?",
+      a: "SEEd.Lab is a social enterprise programme powered by PETRONAS and Tata Consultancy Services (TCS) that supports impact-driven initiatives in Malaysia." },
+    { q: "What is the relationship between Degup and SEEd.Lab?",
+      a: "Degup is an enterprise incubated in the SEEd.Lab Programme." },
+    { q: "Can organisations partner with Degup?",
+      a: "Yes. We welcome partnerships with healthcare providers, NGOs, communities, and organisations aligned with our mission." },
+    { q: "How can I support Degup?",
+      a: "You can support Degup by connecting us with patients, healthcare communities, or organisations that share our vision of improving dialysis access." },
+];
+
+const list = document.getElementById('faq-list');
+
+faqs.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'faq-card rounded-2xl overflow-hidden self-start relative';
+    el.innerHTML = `
+        <div class="faq-open-bar"></div>
+        <button class="w-full text-left px-6 py-5 flex items-start justify-between gap-4"
+                onclick="toggleFaq(${i})" id="faq-btn-${i}">
+            <span class="font-semibold text-navy text-sm leading-snug">${item.q}</span>
+            <span id="faq-icon-${i}"
+                  class="faq-plus flex-shrink-0 w-7 h-7 rounded-full bg-lgrey flex items-center justify-center text-base font-light text-gray-400 transition-all leading-none" style="margin-top:1px;">+</span>
+        </button>
+        <div id="faq-body-${i}" class="faq-body">
+            <div class="px-6 pb-5" style="border-top:1px solid #f0f2f8;">
+                <p class="text-gray-500 text-sm leading-relaxed pt-4">${item.a}</p>
+            </div>
+        </div>
+    `;
+    list.appendChild(el);
+});
+
+function toggleFaq(i) {
+    const body = document.getElementById('faq-body-' + i);
+    const icon = document.getElementById('faq-icon-' + i);
+    const card = icon.closest('.faq-card');
+    const isOpen = body.classList.contains('open');
+
+    document.querySelectorAll('.faq-body').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.faq-plus').forEach(ic => {
+        ic.classList.remove('open');
+        ic.textContent = '+';
+        ic.style.background = '#F5F6FA';
+        ic.style.color = '#9ca3af';
+    });
+    document.querySelectorAll('.faq-card').forEach(c => c.classList.remove('is-open'));
+
+    if (!isOpen) {
+        body.classList.add('open');
+        icon.classList.add('open');
+        icon.textContent = '×';
+        icon.style.background = '#7CC7FF';
+        icon.style.color = '#15153A';
+        card.classList.add('is-open');
+    }
+}
+
+// ── Vision carousel ────────────────────────────────────────
+let visionCurrent = 0;
+const visionTotal  = 5;
+let visionTimer;
+
+function visionGoTo(n) {
+    visionCurrent = n;
+    document.getElementById('vision-carousel').style.transform = `translateX(-${n * 100}%)`;
+    document.querySelectorAll('.vision-dot').forEach((dot, i) => {
+        dot.classList.toggle('active-vision-dot', i === n);
+    });
+    clearInterval(visionTimer);
+    visionTimer = setInterval(visionNext, 4500);
+}
+function visionNext() { visionGoTo((visionCurrent + 1) % visionTotal); }
+function visionPrev() { visionGoTo((visionCurrent - 1 + visionTotal) % visionTotal); }
+
+visionTimer = setInterval(visionNext, 4500);
+</script>
+
+</body>
+</html>
