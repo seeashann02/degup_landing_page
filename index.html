@@ -427,103 +427,98 @@
 
 
 <!-- ─── MISSION / ABOUT ───────────────────────────────────── -->
-<section id="about" class="py-28 bg-white overflow-hidden">
+<section id="about" class="py-20 bg-white overflow-hidden">
     <div class="max-w-7xl mx-auto px-8">
-        <div class="grid md:grid-cols-[1.1fr_0.9fr] gap-14 items-center">
 
-            <!-- image side — vision carousel -->
-            <div class="relative order-2 md:order-1">
+        <!-- ── Centered heading block ── -->
+        <div class="text-center mb-10">
+            <p class="mb-5"><span class="section-badge">Our Vision</span></p>
+            <h2 class="font-display text-5xl md:text-[3.8rem] font-bold text-navy leading-tight mb-5">
+                A healthcare ecosystem<br>
+                <em>built for the patient</em>
+            </h2>
+            <div class="w-12 h-0.5 mx-auto mb-5" style="background:linear-gradient(90deg,#7CC7FF,#DCCBFF);"></div>
+            <p class="text-gray-500 leading-relaxed max-w-2xl mx-auto mb-3">
+                We envision a future where dialysis treatment is no longer a logistical burden but a seamless part of a patient's life.
+            </p>
+            <p class="text-gray-500 leading-relaxed max-w-xl mx-auto mb-7">
+                Degup is bridging the gap between clinical needs and personal freedom, one new breath at a time.
+            </p>
+            <div class="flex flex-wrap gap-3 justify-center">
+                <span class="section-badge">Patient-first</span>
+                <span class="section-badge">Community-driven</span>
+                <span class="section-badge">Made with heart</span>
+            </div>
+        </div>
 
-                <!-- decorative blob behind carousel -->
-                <div class="absolute -inset-6 rounded-[48px] pointer-events-none"
-                     style="background:linear-gradient(135deg,rgba(124,199,255,.13),rgba(220,203,255,.13));filter:blur(2px);z-index:0;"></div>
+        <!-- ── Two equal media panels ── -->
+        <div class="grid md:grid-cols-2 gap-6">
 
-                <div class="relative z-10">
-                    <!-- carousel frame -->
-                    <div class="aspect-[4/3] rounded-[28px] overflow-hidden relative"
-                         style="box-shadow:0 24px 64px rgba(21,21,58,.14);">
-                        <!-- slides strip -->
-                        <div id="vision-carousel" class="flex h-full"
-                             style="transition: transform .7s cubic-bezier(.4,0,.2,1); transform: translateX(0%);">
-
-                            <!-- Slide 1 -->
-                            <div class="flex-shrink-0 w-full h-full">
-                                <img src="https://github.com/seeashann02/Degup/blob/main/KKM.jpeg?raw=true"
-                                     class="w-full h-full object-cover object-center" alt="KKM" referrerpolicy="no-referrer">
-                            </div>
-                            <!-- Slide 2 -->
-                            <div class="flex-shrink-0 w-full h-full">
-                                <img src="https://github.com/seeashann02/Degup/blob/main/Medicare.jpeg?raw=true"
-                                     class="w-full h-full object-cover object-center" alt="Medicare" referrerpolicy="no-referrer">
-                            </div>
-                            <!-- Slide 3 -->
-                            <div class="flex-shrink-0 w-full h-full">
-                                <img src="https://github.com/seeashann02/Degup/blob/main/ngo.png?raw=true"
-                                     class="w-full h-full object-cover object-center" alt="NGO" referrerpolicy="no-referrer">
-                            </div>
-                            <!-- Slide 4 -->
-                            <div class="flex-shrink-0 w-full h-full">
-                                <img src="https://github.com/seeashann02/Degup/blob/main/nkf.jpeg?raw=true"
-                                     class="w-full h-full object-cover object-center" alt="NKF" referrerpolicy="no-referrer">
-                            </div>
-                            <!-- Slide 5 -->
-                            <div class="flex-shrink-0 w-full h-full">
-                                <img src="https://github.com/seeashann02/Degup/blob/main/WhatsApp%20Image%202026-05-06%20at%2010.08.56.jpeg?raw=true"
-                                     class="w-full h-full object-cover object-center" alt="Community" referrerpolicy="no-referrer">
-                            </div>
+            <!-- LEFT: photo carousel -->
+            <div>
+                <p class="text-xs font-bold tracking-[.14em] uppercase mb-3 text-gray-400">In the Field</p>
+                <div class="aspect-[4/3] md:aspect-[3/2] rounded-[24px] overflow-hidden relative"
+                     style="box-shadow:0 16px 48px rgba(21,21,58,.11);">
+                    <!-- slides strip -->
+                    <div id="vision-carousel" class="flex h-full"
+                         style="transition: transform .7s cubic-bezier(.4,0,.2,1); transform: translateX(0%);">
+                        <div class="flex-shrink-0 w-full h-full">
+                            <img src="https://github.com/seeashann02/Degup/blob/main/KKM.jpeg?raw=true"
+                                 class="w-full h-full object-cover object-center" alt="KKM" referrerpolicy="no-referrer">
                         </div>
-
-                        <!-- Prev arrow -->
-                        <button onclick="visionPrev()"
-                                class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center z-10 transition-all hover:scale-110"
-                                style="background:rgba(255,255,255,.7);backdrop-filter:blur(8px);">
-                            <svg width="16" height="16" fill="none" stroke="#15153A" stroke-width="2.5" stroke-linecap="round">
-                                <path d="M10 4L6 8l4 4"/>
-                            </svg>
-                        </button>
-                        <!-- Next arrow -->
-                        <button onclick="visionNext()"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center z-10 transition-all hover:scale-110"
-                                style="background:rgba(255,255,255,.7);backdrop-filter:blur(8px);">
-                            <svg width="16" height="16" fill="none" stroke="#15153A" stroke-width="2.5" stroke-linecap="round">
-                                <path d="M6 4l4 4-4 4"/>
-                            </svg>
-                        </button>
-
-                        <!-- Dot indicators -->
-                        <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
-                            <button class="vision-dot active-vision-dot" onclick="visionGoTo(0)"></button>
-                            <button class="vision-dot"                   onclick="visionGoTo(1)"></button>
-                            <button class="vision-dot"                   onclick="visionGoTo(2)"></button>
-                            <button class="vision-dot"                   onclick="visionGoTo(3)"></button>
-                            <button class="vision-dot"                   onclick="visionGoTo(4)"></button>
+                        <div class="flex-shrink-0 w-full h-full">
+                            <img src="https://github.com/seeashann02/Degup/blob/main/Medicare.jpeg?raw=true"
+                                 class="w-full h-full object-cover object-center" alt="Medicare" referrerpolicy="no-referrer">
                         </div>
+                        <div class="flex-shrink-0 w-full h-full">
+                            <img src="https://github.com/seeashann02/Degup/blob/main/ngo.png?raw=true"
+                                 class="w-full h-full object-cover object-center" alt="NGO" referrerpolicy="no-referrer">
+                        </div>
+                        <div class="flex-shrink-0 w-full h-full">
+                            <img src="https://github.com/seeashann02/Degup/blob/main/nkf.jpeg?raw=true"
+                                 class="w-full h-full object-cover object-center" alt="NKF" referrerpolicy="no-referrer">
+                        </div>
+                        <div class="flex-shrink-0 w-full h-full">
+                            <img src="https://github.com/seeashann02/Degup/blob/main/WhatsApp%20Image%202026-05-06%20at%2010.08.56.jpeg?raw=true"
+                                 class="w-full h-full object-cover object-center" alt="Community" referrerpolicy="no-referrer">
+                        </div>
+                    </div>
+                    <!-- Prev -->
+                    <button onclick="visionPrev()"
+                            class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center z-10 transition-all hover:scale-110"
+                            style="background:rgba(255,255,255,.75);backdrop-filter:blur(8px);">
+                        <svg width="16" height="16" fill="none" stroke="#15153A" stroke-width="2.5" stroke-linecap="round"><path d="M10 4L6 8l4 4"/></svg>
+                    </button>
+                    <!-- Next -->
+                    <button onclick="visionNext()"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center z-10 transition-all hover:scale-110"
+                            style="background:rgba(255,255,255,.75);backdrop-filter:blur(8px);">
+                        <svg width="16" height="16" fill="none" stroke="#15153A" stroke-width="2.5" stroke-linecap="round"><path d="M6 4l4 4-4 4"/></svg>
+                    </button>
+                    <!-- Dots -->
+                    <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
+                        <button class="vision-dot active-vision-dot" onclick="visionGoTo(0)"></button>
+                        <button class="vision-dot"                   onclick="visionGoTo(1)"></button>
+                        <button class="vision-dot"                   onclick="visionGoTo(2)"></button>
+                        <button class="vision-dot"                   onclick="visionGoTo(3)"></button>
+                        <button class="vision-dot"                   onclick="visionGoTo(4)"></button>
                     </div>
                 </div>
             </div>
 
-            <!-- copy side -->
-            <div class="order-1 md:order-2">
-                <p class="mb-5"><span class="section-badge">Our Vision</span></p>
-                <h2 class="font-display text-4xl md:text-[3.1rem] font-bold text-navy leading-tight mb-7">
-                    A healthcare ecosystem<br>
-                    <em>built for the patient</em>
-                </h2>
-
-                <!-- accent rule -->
-                <div class="w-12 h-0.5 mb-7" style="background:linear-gradient(90deg,#7CC7FF,#DCCBFF);"></div>
-
-                <p class="text-gray-500 leading-relaxed mb-5">
-                    We envision a future where dialysis treatment is no longer a logistical burden but a seamless part of a patient's life.
-                </p>
-                <p class="text-gray-500 leading-relaxed mb-10">
-                    Degup is bridging the gap between clinical needs and personal freedom, one new breath at a time.
-                </p>
-
-                <div class="flex flex-wrap gap-3">
-                    <span class="section-badge">Patient-first</span>
-                    <span class="section-badge">Community-driven</span>
-                    <span class="section-badge">Made with heart</span>
+            <!-- RIGHT: YouTube video -->
+            <div>
+                <p class="text-xs font-bold tracking-[.14em] uppercase mb-3" style="color:#7CC7FF;">▶ Watch Our Story</p>
+                <div class="aspect-[4/3] md:aspect-[3/2] rounded-[24px] overflow-hidden"
+                     style="box-shadow:0 16px 48px rgba(21,21,58,.11);background:#0a0a1e;">
+                    <iframe
+                        src="https://www.youtube.com/embed/brxf_f5mjm4?rel=0"
+                        width="100%" height="100%"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                        style="display:block;">
+                    </iframe>
                 </div>
             </div>
 
@@ -994,6 +989,7 @@ function visionNext() { visionGoTo((visionCurrent + 1) % visionTotal); }
 function visionPrev() { visionGoTo((visionCurrent - 1 + visionTotal) % visionTotal); }
 
 visionTimer = setInterval(visionNext, 4500);
+
 </script>
 
 </body>
