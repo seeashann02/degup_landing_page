@@ -6,6 +6,13 @@
     <title>DEGUP</title>
     <link rel="icon" type="image/png" href="https://github.com/seeashann02/Degup/blob/main/logo-transparent-without%20name.png?raw=true">
 
+    <script>
+        // Opt in to scroll-reveal only when JS is available and motion is welcome.
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.documentElement.classList.add('js');
+        }
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,270 +41,665 @@
     </script>
 
     <style>
-        html { scroll-behavior: smooth; }
+        /* ══════════════════════════════════════════════════════
+           DESIGN TOKENS
+        ══════════════════════════════════════════════════════ */
+        :root {
+            /* Elevation — paired contact + ambient shadow.
+               Two layers is what stops a shadow reading as a flat grey blur. */
+            --e1: 0 1px 2px rgba(21,21,58,.045), 0 4px 14px rgba(21,21,58,.045);
+            --e2: 0 2px 5px rgba(21,21,58,.045), 0 14px 34px rgba(21,21,58,.07);
+            --e3: 0 4px 10px rgba(21,21,58,.05),  0 26px 58px rgba(21,21,58,.11);
+            --e4: 0 8px 18px rgba(21,21,58,.06),  0 38px 82px rgba(21,21,58,.14);
+            --e-dark: 0 4px 12px rgba(0,0,0,.22), 0 30px 66px rgba(0,0,0,.36);
 
-        /* gradients */
-        .g-blue     { background: linear-gradient(135deg, #7CC7FF, #D0F4FF); }
-        .g-lav      { background: linear-gradient(135deg, #DCCBFF, #F6F0FF); }
-        .g-care     { background: linear-gradient(135deg, #FFB6D5, #7CC7FF); }
-        .g-pink     { background: linear-gradient(135deg, #FFC6E3, #FFB6D5); }
+            /* Radii */
+            --r-sm: 14px;
+            --r-md: 20px;
+            --r-lg: 28px;
+            --r-xl: 34px;
 
-        .hero-bg {
-            background: linear-gradient(160deg, #ffffff 0%, #F4F0FF 45%, #FFF0F8 100%);
+            /* Motion */
+            --ease:     cubic-bezier(.22,.61,.36,1);
+            --ease-out: cubic-bezier(.16,1,.3,1);
+            --t-fast: .2s;
+            --t:      .34s;
+            --t-slow: .7s;
+
+            /* Navy-tinted ink ramp — cohesive with brand, unlike neutral greys */
+            --ink-1: #15153A;
+            --ink-2: #45455F;
+            --ink-3: #6B6B84;   /* 4.5:1 on white — AA for body copy */
+            --ink-4: #70708A;   /* tertiary — still AA at small sizes */
+
+            --line: rgba(21,21,58,.07);
         }
 
-        /* floating animation */
-        @keyframes floatUp {
-            0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-10px); }
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 92px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
-        .float-1 { animation: floatUp 3.5s ease-in-out infinite; }
-        .float-2 { animation: floatUp 3.5s ease-in-out infinite; animation-delay: 1.8s; }
+        body { background: #fff; }
 
-        /* card hover lift */
+        ::selection { background: rgba(124,199,255,.32); color: #15153A; }
+
+        /* ══════════════════════════════════════════════════════
+           TYPOGRAPHY — one fluid scale, used everywhere
+        ══════════════════════════════════════════════════════ */
+        h1, h2 { letter-spacing: -.04em; }
+        h3     { letter-spacing: -.015em; }
+        h1 em, h2 em { font-style: normal; color: #2B87C8; }
+
+        .h2 {
+            font-size: clamp(2.05rem, 1.32rem + 2.65vw, 3.3rem);
+            line-height: 1.08;
+            letter-spacing: -.042em;
+        }
+        .h2-lg {
+            font-size: clamp(2.3rem, 1.35rem + 3.3vw, 3.7rem);
+            line-height: 1.06;
+            letter-spacing: -.045em;
+        }
+        .h3 {
+            font-size: clamp(1.05rem, 1rem + .2vw, 1.2rem);
+            line-height: 1.35;
+        }
+        /* Section intro paragraph */
+        .lede {
+            font-size: clamp(1rem, .95rem + .2vw, 1.13rem);
+            line-height: 1.68;
+            color: var(--ink-3);
+        }
+        .body-sm { font-size: .875rem; line-height: 1.72; color: var(--ink-3); }
+
+        /* Optical balance for centred multi-line copy */
+        .balance { text-wrap: balance; }
+
+        /* ══════════════════════════════════════════════════════
+           SCROLL REVEAL
+        ══════════════════════════════════════════════════════ */
+        /* Content is visible by default and only hidden once JS confirms it can
+           reveal it again — so a blocked or failed script can never blank the page. */
+        .reveal { opacity: 1; }
+        html.js .reveal {
+            opacity: 0;
+            transform: translateY(26px);
+            transition: opacity var(--t-slow) var(--ease-out),
+                        transform var(--t-slow) var(--ease-out);
+            transition-delay: var(--d, 0s);
+            will-change: opacity, transform;
+        }
+        html.js .reveal.in { opacity: 1; transform: none; }
+
+        /* Hero entrance — runs on load, not scroll */
+        @keyframes riseIn {
+            from { opacity: 0; transform: translateY(22px); }
+            to   { opacity: 1; transform: none; }
+        }
+        .rise {
+            opacity: 0;
+            animation: riseIn .95s var(--ease-out) forwards;
+            animation-delay: var(--d, 0s);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            .reveal { opacity: 1 !important; transform: none !important; transition: none; }
+            .rise   { opacity: 1 !important; animation: none; }
+            .hero-img { animation: none !important; }
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+        }
+
+        /* ══════════════════════════════════════════════════════
+           SURFACES
+        ══════════════════════════════════════════════════════ */
+        .g-blue { background: linear-gradient(135deg, #7CC7FF, #D0F4FF); }
+        .g-lav  { background: linear-gradient(135deg, #DCCBFF, #F6F0FF); }
+        .g-care { background: linear-gradient(135deg, #FFB6D5, #7CC7FF); }
+        .g-pink { background: linear-gradient(135deg, #FFC6E3, #FFB6D5); }
+
+        /* Page-wide backgrounds — no section is ever flat white */
+        .bg-veil {
+            background:
+                radial-gradient(1100px 600px at 12% -8%,  rgba(124,199,255,.10), transparent 62%),
+                radial-gradient(900px 520px at 92% 108%, rgba(220,203,255,.11), transparent 62%),
+                linear-gradient(180deg, #FFFFFF 0%, #FBFCFE 48%, #FFFFFF 100%);
+        }
+        .bg-veil-alt {
+            background:
+                radial-gradient(900px 520px at 88% -6%,  rgba(220,203,255,.12), transparent 60%),
+                radial-gradient(820px 480px at 6% 104%,  rgba(124,199,255,.09), transparent 60%),
+                linear-gradient(180deg, #FAFBFD 0%, #F4F6FB 52%, #FAFBFD 100%);
+        }
+        .bg-tint { background: linear-gradient(180deg, #F7F8FC 0%, #F2F4FA 100%); }
+
+        /* Filmic grain — the detail that stops gradients looking synthetic */
+        .grain { position: relative; }
+        .grain::after {
+            content: '';
+            position: absolute; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+            opacity: .038;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Hairline that separates sections without a visible border */
+        .edge-top::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(21,21,58,.07) 22%, rgba(21,21,58,.07) 78%, transparent);
+        }
+
+        /* ══════════════════════════════════════════════════════
+           CARDS
+        ══════════════════════════════════════════════════════ */
+        .card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: var(--r-lg);
+            box-shadow: var(--e1);
+            transition: transform var(--t) var(--ease),
+                        box-shadow var(--t) var(--ease),
+                        border-color var(--t) var(--ease);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--e3);
+            border-color: rgba(124,199,255,.42);
+        }
+        /* Accent rule that grows on hover */
+        .card-accent { height: 3px; transition: opacity var(--t) var(--ease); opacity: .85; }
+        .card:hover .card-accent { opacity: 1; }
+
         .lift {
-            transition: transform .3s ease, box-shadow .3s ease;
+            transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
         }
-        .lift:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 24px 64px rgba(21,21,58,.10);
+        .lift:hover { transform: translateY(-5px); box-shadow: var(--e3); }
+
+        /* Icon tile — consistent across every section */
+        .icon-tile {
+            width: 52px; height: 52px;
+            border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(21,21,58,.10);
+            transition: transform var(--t) var(--ease-out), box-shadow var(--t) var(--ease);
         }
-
-        /* FAQ */
-        .faq-body {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height .4s ease;
+        .card:hover .icon-tile,
+        .lift:hover .icon-tile {
+            transform: translateY(-2px) scale(1.045);
+            box-shadow: 0 8px 20px rgba(21,21,58,.14);
         }
-        .faq-body.open { max-height: 400px; }
-        .faq-plus { transition: transform .3s ease; }
-        .faq-plus.open { transform: rotate(45deg); }
+        .icon-tile svg { display: block; }
 
-        /* Apple-tight heading tracking */
-        h1, h2 { letter-spacing: -0.04em; }
-
-        /* Heading emphasis — no italic, brand sky blue */
-        h1 em, h2 em {
-            font-style: normal;
-            color: #2B87C8;
-        }
-
-        /* Frosted glass card — for dark sections */
+        /* Frosted glass card — dark sections */
         .glass-card {
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.13);
+            background: rgba(255,255,255,.07);
+            border: 1px solid rgba(255,255,255,.13);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            transition: background .3s ease, border-color .3s ease, transform .3s ease, box-shadow .3s ease;
+            transition: background var(--t) var(--ease), border-color var(--t) var(--ease),
+                        transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
         }
         .glass-card:hover {
-            background: rgba(255,255,255,0.11);
-            border-color: rgba(255,255,255,0.22);
-            transform: translateY(-6px);
-            box-shadow: 0 24px 64px rgba(0,0,0,0.35);
+            background: rgba(255,255,255,.11);
+            border-color: rgba(255,255,255,.22);
+            transform: translateY(-5px);
+            box-shadow: var(--e-dark);
         }
 
-        /* Dark section badge */
+        /* ══════════════════════════════════════════════════════
+           MEDIA FRAMES
+        ══════════════════════════════════════════════════════ */
+        .frame {
+            position: relative;
+            border-radius: var(--r-lg);
+            overflow: hidden;
+            box-shadow: var(--e4);
+            background: #EEF2F9;
+        }
+        /* Inner light-catch — makes a framed image sit in the page, not on it */
+        .frame::after {
+            content: '';
+            position: absolute; inset: 0;
+            border-radius: inherit;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.16),
+                        inset 0 1px 0 rgba(255,255,255,.22);
+            pointer-events: none;
+            z-index: 2;
+        }
+        .zoom-img {
+            transition: transform 1.1s var(--ease-out);
+            will-change: transform;
+        }
+        .zoom-wrap:hover .zoom-img { transform: scale(1.05); }
+
+        /* ══════════════════════════════════════════════════════
+           BUTTONS — one system, three variants
+        ══════════════════════════════════════════════════════ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Manrope', sans-serif;
+            font-size: .875rem;
+            font-weight: 600;
+            letter-spacing: -.005em;
+            padding: 14px 30px;
+            border-radius: 999px;
+            cursor: pointer;
+            position: relative;
+            white-space: nowrap;
+            transition: transform var(--t-fast) var(--ease-out),
+                        box-shadow var(--t) var(--ease),
+                        background-color var(--t) var(--ease),
+                        border-color var(--t) var(--ease),
+                        color var(--t) var(--ease);
+        }
+        .btn:active { transform: translateY(0) scale(.985); }
+        .btn-sm { padding: 11px 22px; font-size: .82rem; }
+
+        .btn-arrow { transition: transform var(--t) var(--ease-out); }
+        .btn:hover .btn-arrow { transform: translateX(3px); }
+
+        /* Navy fill */
+        .btn-navy {
+            background: #15153A;
+            color: #fff;
+            box-shadow: 0 1px 2px rgba(21,21,58,.16), 0 8px 22px rgba(21,21,58,.20);
+        }
+        .btn-navy:hover {
+            background: #1E1E4E;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(21,21,58,.18), 0 16px 36px rgba(21,21,58,.28);
+        }
+
+        /* White fill — for dark backgrounds */
+        .btn-white {
+            background: #fff;
+            color: #15153A;
+            box-shadow: 0 1px 2px rgba(0,0,0,.14), 0 10px 26px rgba(0,0,0,.22);
+        }
+        .btn-white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 6px rgba(0,0,0,.16),
+                        0 18px 40px rgba(0,0,0,.3),
+                        0 0 0 5px rgba(255,255,255,.1);
+        }
+
+        /* Glass outline — for dark backgrounds */
+        .btn-glass {
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.28);
+            color: #fff;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .btn-glass:hover {
+            background: rgba(255,255,255,.15);
+            border-color: rgba(255,255,255,.45);
+            transform: translateY(-2px);
+        }
+
+        /* ══════════════════════════════════════════════════════
+           BADGES & LABELS
+        ══════════════════════════════════════════════════════ */
+        .section-badge {
+            display: inline-block;
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: .155em;
+            text-transform: uppercase;
+            color: #15153A;
+            border: 1px solid rgba(124,199,255,.85);
+            border-radius: 999px;
+            padding: 6px 16px;
+            background: linear-gradient(180deg, rgba(124,199,255,.14), rgba(124,199,255,.07));
+            box-shadow: 0 1px 3px rgba(124,199,255,.18);
+        }
         .section-badge-dark {
             display: inline-block;
-            font-size: 11px; font-weight: 700;
-            letter-spacing: .16em; text-transform: uppercase;
-            color: rgba(255,255,255,.65);
+            font-size: 10.5px; font-weight: 700;
+            letter-spacing: .155em; text-transform: uppercase;
+            color: rgba(255,255,255,.7);
             border: 1px solid rgba(255,255,255,.2);
             border-radius: 999px;
-            padding: 5px 16px;
+            padding: 6px 16px;
             background: rgba(255,255,255,.06);
         }
-
-        /* Carousel dots — team section (white on dark) */
-        .carousel-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: rgba(255,255,255,.35);
-            border: none; cursor: pointer; padding: 0;
-            transition: all .35s ease;
+        .label {
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: .16em;
+            text-transform: uppercase;
         }
-        .carousel-dot.active-dot {
-            width: 26px;
-            border-radius: 4px;
-            background: #fff;
+        /* Eyebrow with a leading rule */
+        .eyebrow {
+            display: inline-flex; align-items: center; gap: 10px;
+            font-size: 10.5px; font-weight: 700;
+            letter-spacing: .16em; text-transform: uppercase;
         }
-
-        /* Vision carousel dots (navy on light) */
-        .vision-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: rgba(21,21,58,.20);
-            border: none; cursor: pointer; padding: 0;
-            transition: all .35s ease;
-        }
-        .vision-dot.active-vision-dot {
-            width: 26px;
-            border-radius: 4px;
-            background: #15153A;
+        .eyebrow::before {
+            content: ''; width: 22px; height: 1.5px; border-radius: 2px;
+            background: currentColor; opacity: .45;
         }
 
-        /* ECG heartbeat animations */
-        @keyframes ecg-draw {
-            0%   { stroke-dashoffset: 900; opacity: 0; }
-            10%  { opacity: 1; }
-            90%  { opacity: 1; }
-            100% { stroke-dashoffset: 0; opacity: 0; }
+        /* Accent rule under centred headings */
+        .rule {
+            width: 44px; height: 2px; border-radius: 2px;
+            background: linear-gradient(90deg, #7CC7FF, #DCCBFF);
         }
+
+        /* ══════════════════════════════════════════════════════
+           NAV
+        ══════════════════════════════════════════════════════ */
+        .nav-shell {
+            background: rgba(255,255,255,.72);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid transparent;
+            transition: background var(--t) var(--ease),
+                        border-color var(--t) var(--ease),
+                        box-shadow var(--t) var(--ease);
+        }
+        .nav-shell.scrolled {
+            background: rgba(255,255,255,.9);
+            border-bottom-color: rgba(21,21,58,.07);
+            box-shadow: 0 1px 24px rgba(21,21,58,.06);
+        }
+        .nav-inner { transition: padding var(--t) var(--ease); }
+        .nav-shell.scrolled .nav-inner { padding-top: .7rem; padding-bottom: .7rem; }
+
+        .nav-link {
+            position: relative;
+            font-size: .875rem;
+            color: var(--ink-3);
+            transition: color var(--t) var(--ease);
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute; left: 0; bottom: -5px;
+            width: 100%; height: 1.5px; border-radius: 2px;
+            background: linear-gradient(90deg, #7CC7FF, #DCCBFF);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform var(--t) var(--ease-out);
+        }
+        .nav-link:hover { color: var(--ink-1); }
+        .nav-link:hover::after { transform: scaleX(1); }
+
+        /* ══════════════════════════════════════════════════════
+           HERO
+        ══════════════════════════════════════════════════════ */
+        /* Slow ken-burns drift — reads as depth, not motion */
+        @keyframes kenBurns {
+            0%   { transform: scale(1.06) translate3d(0,0,0); }
+            100% { transform: scale(1.15) translate3d(-1.2%, -1.6%, 0); }
+        }
+        .hero-img {
+            animation: kenBurns 26s ease-out forwards;
+            will-change: transform;
+        }
+        /* Vignette — pulls the eye to centre */
+        .hero-vignette {
+            background: radial-gradient(120% 88% at 50% 42%,
+                        transparent 34%,
+                        rgba(6,6,20,.30) 76%,
+                        rgba(6,6,20,.62) 100%);
+        }
+
+        /* ECG heartbeat */
         @keyframes ecg-loop {
             0%   { stroke-dashoffset: 900; }
             100% { stroke-dashoffset: 0; }
         }
         .ecg-hero {
             stroke-dasharray: 900;
-            animation: ecg-loop 5s linear infinite;
-            filter: drop-shadow(0 0 8px rgba(124,199,255,0.75));
+            animation: ecg-loop 6s cubic-bezier(.5,.02,.5,.98) infinite;
+            filter: drop-shadow(0 0 5px rgba(124,199,255,.9))
+                    drop-shadow(0 0 16px rgba(124,199,255,.45));
         }
-        .ecg-mini {
-            stroke-dasharray: 200;
-            animation: ecg-loop 2s linear infinite;
-            filter: drop-shadow(0 0 5px rgba(124,199,255,0.8));
+        /* Soft trailing halo beneath the trace */
+        .ecg-halo {
+            stroke-dasharray: 900;
+            animation: ecg-loop 6s cubic-bezier(.5,.02,.5,.98) infinite;
+            filter: blur(7px);
+            opacity: .5;
         }
         @keyframes ecg-pulse-glow {
             0%, 100% { opacity: .04; }
-            50%       { opacity: .09; }
+            50%      { opacity: .085; }
         }
-        .ecg-texture { animation: ecg-pulse-glow 4s ease-in-out infinite; }
+        .ecg-texture { animation: ecg-pulse-glow 5s ease-in-out infinite; }
 
-        /* section label */
-        .label {
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: .16em;
-            text-transform: uppercase;
+        /* Scroll cue */
+        @keyframes cueDrift {
+            0%, 100% { transform: translateY(0);   opacity: .5; }
+            50%      { transform: translateY(6px); opacity: 1; }
+        }
+        .scroll-cue { animation: cueDrift 2.4s ease-in-out infinite; }
+
+        /* ══════════════════════════════════════════════════════
+           CAROUSEL DOTS
+        ══════════════════════════════════════════════════════ */
+        .carousel-dot, .vision-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            border: none; cursor: pointer; padding: 0;
+            transition: width var(--t) var(--ease-out),
+                        background-color var(--t) var(--ease),
+                        border-radius var(--t) var(--ease);
+        }
+        .carousel-dot { background: rgba(255,255,255,.35); }
+        .carousel-dot.active-dot { width: 24px; border-radius: 4px; background: #fff; }
+        .vision-dot { background: rgba(255,255,255,.45); box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+        .vision-dot.active-vision-dot { width: 24px; border-radius: 4px; background: #fff; }
+
+        .carousel-btn {
+            background: rgba(255,255,255,.82);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(21,21,58,.16);
+            opacity: 0;
+            transition: opacity var(--t) var(--ease), transform var(--t) var(--ease-out),
+                        background-color var(--t) var(--ease);
+        }
+        .carousel-frame:hover .carousel-btn,
+        .carousel-btn:focus-visible { opacity: 1; }
+        .carousel-btn:hover { background: #fff; transform: translateY(-50%) scale(1.08); }
+        @media (hover: none) { .carousel-btn { opacity: 1; } }
+
+        /* ══════════════════════════════════════════════════════
+           FAQ
+        ══════════════════════════════════════════════════════ */
+        /* Height is measured and set from JS so long answers never clip */
+        .faq-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .42s var(--ease-out);
         }
 
-        /* section badge pill */
-        .section-badge {
-            display: inline-block;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: .16em;
-            text-transform: uppercase;
-            color: #15153A;
-            border: 1.5px solid #7CC7FF;
-            border-radius: 999px;
-            padding: 5px 16px;
-            background: rgba(124,199,255,.08);
-        }
+        .faq-plus { transition: transform var(--t) var(--ease-out), background-color var(--t) var(--ease), color var(--t) var(--ease); }
+        .faq-plus.open { transform: rotate(45deg); }
 
-        /* FAQ cards */
         .faq-card {
-            background: white;
-            border: 1px solid #edf0f7;
-            box-shadow: 0 1px 6px rgba(21,21,58,.04);
-            transition: box-shadow .25s ease, border-color .25s ease, transform .2s ease;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: var(--r-md);
+            box-shadow: var(--e1);
+            transition: box-shadow var(--t) var(--ease),
+                        border-color var(--t) var(--ease),
+                        transform var(--t) var(--ease);
         }
         .faq-card:hover {
-            box-shadow: 0 8px 28px rgba(21,21,58,.08);
+            box-shadow: var(--e2);
             border-color: rgba(124,199,255,.5);
             transform: translateY(-2px);
         }
+        .faq-card.is-open {
+            box-shadow: var(--e2);
+            border-color: rgba(124,199,255,.55);
+        }
         .faq-open-bar {
             width: 3px;
-            border-radius: 0 2px 2px 0;
+            border-radius: 0 3px 3px 0;
             background: linear-gradient(180deg, #7CC7FF, #DCCBFF);
             position: absolute;
             left: 0; top: 0; bottom: 0;
-            opacity: 0;
-            transition: opacity .25s ease;
+            transform: scaleY(0);
+            transform-origin: top;
+            transition: transform .4s var(--ease-out);
         }
-        .faq-card.is-open .faq-open-bar { opacity: 1; }
+        .faq-card.is-open .faq-open-bar { transform: scaleY(1); }
 
-        /* blob shape */
-        .blob { border-radius: 60% 40% 35% 65% / 55% 35% 65% 45%; }
+        /* ══════════════════════════════════════════════════════
+           RESOURCE ROWS (kidney section)
+        ══════════════════════════════════════════════════════ */
+        .res-row {
+            border: 1px solid var(--line);
+            border-radius: var(--r-sm);
+            background: #fff;
+            transition: border-color var(--t) var(--ease),
+                        box-shadow var(--t) var(--ease),
+                        transform var(--t) var(--ease),
+                        background-color var(--t) var(--ease);
+        }
+        .res-row:hover {
+            border-color: rgba(124,199,255,.55);
+            box-shadow: var(--e2);
+            transform: translateX(3px);
+            background: #FCFDFF;
+        }
+        .res-row .res-arrow { transition: transform var(--t) var(--ease-out), color var(--t) var(--ease); }
+        .res-row:hover .res-arrow { transform: translate(2px,-2px); color: #15153A; }
 
-        /* soft scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f5f6fa; }
-        ::-webkit-scrollbar-thumb { background: #DCCBFF; border-radius: 10px; }
+        /* ══════════════════════════════════════════════════════
+           FOCUS — visible, on-brand, keyboard only
+        ══════════════════════════════════════════════════════ */
+        a:focus-visible, button:focus-visible {
+            outline: 2px solid #7CC7FF;
+            outline-offset: 3px;
+            border-radius: 6px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #F6F7FB; }
+        ::-webkit-scrollbar-thumb {
+            background: #D6DAE8;
+            border-radius: 10px;
+            border: 3px solid #F6F7FB;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: #BFC5D8; }
     </style>
 </head>
 <body class="text-navy overflow-x-hidden">
 
 <!-- ─── NAV ─────────────────────────────────────────────── -->
-<nav class="fixed top-0 left-0 right-0 z-50 bg-white/85 backdrop-blur-md border-b border-gray-100">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-            <img src="https://github.com/seeashann02/Degup/blob/main/logo-transparent-without%20name.png?raw=true" alt="Degup logo" style="width:38px;height:38px;object-fit:contain;flex-shrink:0;">
-            <span class="font-display font-semibold text-xl tracking-tight">DEGUP</span>
-        </div>
+<nav id="nav" class="nav-shell fixed top-0 left-0 right-0 z-50">
+    <div class="nav-inner max-w-6xl mx-auto px-6 sm:px-8 py-[18px] flex items-center justify-between">
+        <a href="#" class="flex items-center gap-2.5 group" aria-label="Degup home">
+            <img src="https://github.com/seeashann02/Degup/blob/main/logo-transparent-without%20name.png?raw=true"
+                 alt="" width="36" height="36"
+                 style="width:36px;height:36px;object-fit:contain;flex-shrink:0;transition:transform .34s cubic-bezier(.16,1,.3,1);"
+                 class="group-hover:scale-105">
+            <span class="font-display font-bold text-[1.22rem] tracking-[-.02em]">DEGUP</span>
+        </a>
 
-        <div class="hidden md:flex items-center gap-8">
-            <a href="#about"          class="text-sm text-gray-500 hover:text-navy transition-colors">About</a>
-            <a href="#how-it-works"   class="text-sm text-gray-500 hover:text-navy transition-colors">How it works</a>
-            <a href="#kidney-health"  class="text-sm text-gray-500 hover:text-navy transition-colors">Kidney Health</a>
-            <a href="#faq"            class="text-sm text-gray-500 hover:text-navy transition-colors">FAQ</a>
-            <a href="https://wa.me/601176344216?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda."
+        <div class="hidden md:flex items-center gap-9">
+            <a href="#about"         class="nav-link">About</a>
+            <a href="#how-it-works"  class="nav-link">How it works</a>
+            <a href="#kidney-health" class="nav-link">Kidney Health</a>
+            <a href="#faq"           class="nav-link">FAQ</a>
+            <a href="https://degup2ndmvp.vercel.app/"
                target="_blank" rel="noopener noreferrer"
-               class="bg-navy text-white text-sm px-5 py-2.5 rounded-full hover:opacity-90 transition-all shadow-sm">
-                Talk to us
+               class="btn btn-navy btn-sm">
+                Book A Slot
             </a>
         </div>
 
-        <button class="md:hidden" onclick="document.getElementById('mob-nav').classList.toggle('hidden')">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 11h16M3 6h16M3 16h16"/>
+        <button id="mob-toggle" class="md:hidden w-10 h-10 -mr-2 flex items-center justify-center rounded-full transition-colors hover:bg-black/5"
+                aria-label="Open menu" aria-expanded="false" aria-controls="mob-nav">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" viewBox="0 0 20 20">
+                <path d="M3 6h14M3 10h14M3 14h14"/>
             </svg>
         </button>
     </div>
-    <div id="mob-nav" class="hidden md:hidden bg-white border-t border-gray-100 px-6 py-5 flex flex-col gap-4">
-        <a href="#about"         class="text-sm text-gray-600">About</a>
-        <a href="#how-it-works"  class="text-sm text-gray-600">How it works</a>
-        <a href="#kidney-health" class="text-sm text-gray-600">Kidney Health</a>
-        <a href="#faq"           class="text-sm text-gray-600">FAQ</a>
-        <a href="https://wa.me/601176344216?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda." target="_blank" rel="noopener noreferrer" class="bg-navy text-white text-sm px-5 py-3 rounded-full text-center">Talk to us</a>
+
+    <div id="mob-nav" class="hidden md:hidden px-6 pb-6 pt-1 flex flex-col gap-1"
+         style="background:rgba(255,255,255,.97);border-top:1px solid rgba(21,21,58,.06);">
+        <a href="#about"         class="text-[.95rem] py-3 border-b transition-colors hover:text-navy" style="color:var(--ink-2);border-color:rgba(21,21,58,.05)">About</a>
+        <a href="#how-it-works"  class="text-[.95rem] py-3 border-b transition-colors hover:text-navy" style="color:var(--ink-2);border-color:rgba(21,21,58,.05)">How it works</a>
+        <a href="#kidney-health" class="text-[.95rem] py-3 border-b transition-colors hover:text-navy" style="color:var(--ink-2);border-color:rgba(21,21,58,.05)">Kidney Health</a>
+        <a href="#faq"           class="text-[.95rem] py-3 mb-4 transition-colors hover:text-navy" style="color:var(--ink-2)">FAQ</a>
+        <a href="https://wa.me/601176344216?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda."
+           target="_blank" rel="noopener noreferrer" class="btn btn-navy w-full">Talk to us</a>
     </div>
 </nav>
 
 
 <!-- ─── HERO ─────────────────────────────────────────────── -->
-<section class="min-h-screen relative overflow-hidden flex items-center justify-center">
+<section class="min-h-[100svh] relative overflow-hidden flex items-center justify-center grain">
 
-    <!-- full-bleed background image -->
+    <!-- full-bleed background image, slow ken-burns drift -->
     <img src="https://www.maaedicare.org/wp-content/uploads/2026/01/Maaedicare-Dialysis-Malaysia-1536x1024.jpg"
-         alt="Dialysis patient" referrerpolicy="no-referrer"
-         class="absolute inset-0 w-full h-full object-cover object-center">
+         alt="A dialysis patient receiving treatment" referrerpolicy="no-referrer"
+         class="hero-img absolute inset-0 w-full h-full object-cover object-center">
 
-    <!-- cinematic dark overlay — warm, not cold -->
-    <div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(8,8,24,0.52) 0%, rgba(8,8,24,0.38) 45%, rgba(8,8,24,0.72) 100%);"></div>
+    <!-- tonal overlay — deepest at the base so type always clears the image -->
+    <div class="absolute inset-0" style="background:linear-gradient(178deg, rgba(8,8,24,.60) 0%, rgba(8,8,24,.40) 34%, rgba(8,8,24,.46) 62%, rgba(8,8,24,.82) 100%);"></div>
+    <!-- vignette — draws the eye to centre -->
+    <div class="hero-vignette absolute inset-0 pointer-events-none"></div>
 
     <!-- centered content -->
-    <div class="relative z-10 text-center max-w-4xl mx-auto px-6 pt-20 md:pt-24">
+    <div class="relative z-10 text-center max-w-4xl mx-auto px-6 pt-24 pb-28 md:pt-24 md:pb-32">
 
-        <h1 class="font-display text-[2.6rem] sm:text-6xl md:text-8xl font-bold leading-[1.08] md:leading-[1.04] mb-5 md:mb-7 text-white">
+        <h1 class="rise font-display font-bold text-white mb-5 md:mb-7"
+            style="--d:.22s;font-size:clamp(2.7rem,1.5rem + 6.2vw,6.4rem);line-height:1.03;letter-spacing:-.05em;text-shadow:0 2px 40px rgba(0,0,0,.35);">
             Connecting with<br>
-            <em class="not-italic" style="background: linear-gradient(120deg,#7CC7FF,#DCCBFF,#FFC6E3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">
+            <em class="not-italic" style="background:linear-gradient(115deg,#8FD0FF 0%,#DCCBFF 48%,#FFC6E3 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
                 Care
             </em>
         </h1>
 
-        <p class="text-base md:text-xl leading-relaxed max-w-sm sm:max-w-xl mx-auto mb-9 md:mb-12" style="color:rgba(255,255,255,.62);">
+        <p class="rise mx-auto mb-9 md:mb-11 balance"
+           style="--d:.34s;font-size:clamp(1rem,.94rem + .42vw,1.22rem);line-height:1.62;max-width:34rem;color:rgba(255,255,255,.68);">
             Helping dialysis patients take back control of their lives with flexible, accessible treatment that fits their daily routines.
         </p>
 
-        <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
+        <div class="rise flex flex-col sm:flex-row gap-3 justify-center items-center" style="--d:.46s;">
             <a href="https://wa.me/601176344216?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda."
                target="_blank" rel="noopener noreferrer"
-               class="bg-white text-navy w-full sm:w-auto px-8 py-3.5 rounded-full font-semibold hover:bg-opacity-90 hover:shadow-2xl transition-all text-sm">
+               class="btn btn-white w-full sm:w-auto">
                 Talk to Us
             </a>
-            <a href="https://www.youtube.com/watch?v=brxf_f5mjm4"
-               class="w-full sm:w-auto px-8 py-3.5 rounded-full font-semibold border transition-all text-sm text-white"
-               style="border-color:rgba(255,255,255,.35);backdrop-filter:blur(8px);background:rgba(255,255,255,.08);">
-                See our story →
+            <a href="https://www.youtube.com/watch?v=brxf_f5mjm4" target="_blank" rel="noopener noreferrer"
+               class="btn btn-glass w-full sm:w-auto">
+                See our story <span class="btn-arrow">→</span>
             </a>
         </div>
     </div>
 
-    <!-- ECG hero line — glows on the dark overlay -->
-    <div class="absolute bottom-24 left-0 right-0 pointer-events-none overflow-hidden">
-        <svg width="100%" height="70" viewBox="0 0 1440 70" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- ECG hero line — halo beneath, crisp trace above -->
+    <div class="absolute bottom-[6.5rem] md:bottom-24 left-0 right-0 pointer-events-none overflow-hidden">
+        <svg width="100%" height="70" viewBox="0 0 1440 70" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path class="ecg-halo"
+                  d="M0,35 L160,35 L175,33 L185,35 L193,35 L197,8 L201,62 L205,35 L215,44 L230,35
+                     L390,35 L405,33 L415,35 L423,35 L427,8 L431,62 L435,35 L445,44 L460,35
+                     L620,35 L635,33 L645,35 L653,35 L657,8 L661,62 L665,35 L675,44 L690,35
+                     L850,35 L865,33 L875,35 L883,35 L887,8 L891,62 L895,35 L905,44 L920,35
+                     L1080,35 L1095,33 L1105,35 L1113,35 L1117,8 L1121,62 L1125,35 L1135,44 L1150,35
+                     L1310,35 L1325,33 L1335,35 L1343,35 L1347,8 L1351,62 L1355,35 L1365,44 L1440,35"
+                  stroke="url(#ecg-grad-hero)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
             <path class="ecg-hero"
                   d="M0,35 L160,35 L175,33 L185,35 L193,35 L197,8 L201,62 L205,35 L215,44 L230,35
                      L390,35 L405,33 L415,35 L423,35 L427,8 L431,62 L435,35 L445,44 L460,35
@@ -305,7 +707,7 @@
                      L850,35 L865,33 L875,35 L883,35 L887,8 L891,62 L895,35 L905,44 L920,35
                      L1080,35 L1095,33 L1105,35 L1113,35 L1117,8 L1121,62 L1125,35 L1135,44 L1150,35
                      L1310,35 L1325,33 L1335,35 L1343,35 L1347,8 L1351,62 L1355,35 L1365,44 L1440,35"
-                  stroke="url(#ecg-grad-hero)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  stroke="url(#ecg-grad-hero)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             <defs>
                 <linearGradient id="ecg-grad-hero" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%"   stop-color="#7CC7FF"/>
@@ -317,103 +719,94 @@
     </div>
 
     <!-- scroll cue -->
+    <a href="#about" aria-label="Scroll to content"
+       class="rise absolute bottom-8 left-1/2 -translate-x-1/2 z-10 hidden sm:flex flex-col items-center gap-2 group" style="--d:.75s;">
+        <span class="label" style="color:rgba(255,255,255,.42);font-size:9.5px;">Scroll</span>
+        <svg class="scroll-cue" width="15" height="22" viewBox="0 0 15 22" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4" stroke-linecap="round">
+            <path d="M7.5 4v11M3.5 11.5l4 4 4-4"/>
+        </svg>
+    </a>
 </section>
 
 
 <!-- ─── PROBLEM ───────────────────────────────────────────── -->
-<section class="py-28 relative overflow-hidden" style="background:linear-gradient(180deg,#ffffff 0%,#F4F6FB 50%,#ffffff 100%)">
+<section class="py-24 md:py-32 relative overflow-hidden bg-veil">
 
-    <!-- decorative blobs -->
-    <div class="absolute top-0 left-0 w-96 h-96 rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(124,199,255,.12) 0%,transparent 70%);transform:translate(-30%,-30%)"></div>
-    <div class="absolute bottom-0 right-0 w-96 h-96 rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(220,203,255,.12) 0%,transparent 70%);transform:translate(30%,30%)"></div>
-
-    <div class="relative max-w-6xl mx-auto px-6">
-        <div class="text-center mb-20">
-            <p class="mb-5"><span class="section-badge">The Challenge</span></p>
-            <h2 class="font-display text-4xl md:text-[3.2rem] font-bold text-navy leading-tight mb-5">
-                Dialysis is already difficult<br>
+    <div class="relative max-w-6xl mx-auto px-6 sm:px-8">
+        <div class="text-center mb-16 md:mb-20">
+            <p class="mb-5 reveal"><span class="section-badge">The Challenge</span></p>
+            <h2 class="h2 font-display font-bold text-navy mb-6 reveal balance" style="--d:.08s;">
+                Dialysis is already difficult<br class="hidden sm:block">
                 <em>scheduling shouldn't be</em>
             </h2>
-            <p class="text-gray-400 text-lg max-w-lg mx-auto leading-relaxed">
+            <p class="lede max-w-lg mx-auto reveal balance" style="--d:.16s;">
                 We are solving the coordination gaps that make treatment a barrier to daily life.
             </p>
         </div>
 
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
 
             <!-- 1 -->
-            <div class="lift rounded-3xl bg-white overflow-hidden" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
-                <div style="height:3px;background:linear-gradient(90deg,#7CC7FF,#D0F4FF);"></div>
-                <div class="p-8">
-                    <div class="flex items-start justify-between mb-7">
-                        <div class="w-14 h-14 g-blue rounded-2xl flex items-center justify-center shadow-sm">
-                            <svg width="26" height="26" fill="none" stroke="white" stroke-width="2.2">
-                                <rect x="3" y="4" width="18" height="18" rx="2"/>
-                                <path d="M16 2v4M8 2v4M3 10h18"/>
-                            </svg>
-                        </div>
-                        <span class="font-display font-black text-6xl leading-none" style="color:rgba(21,21,58,.04);"></span>
+            <div class="card overflow-hidden reveal" style="--d:.06s;">
+                <div class="card-accent" style="background:linear-gradient(90deg,#7CC7FF,#D0F4FF);"></div>
+                <div class="p-7 md:p-8">
+                    <div class="icon-tile g-blue mb-7">
+                        <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="5" width="18" height="16" rx="2.5"/>
+                            <path d="M16 3v4M8 3v4M3 11h18"/>
+                        </svg>
                     </div>
-                    <h3 class="font-semibold text-navy text-lg mb-3">Work Schedule</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">
-                        Dialysis slots must work with <em class="not-italic font-medium text-gray-500">your</em> schedule, not the other way around.
+                    <h3 class="h3 font-display font-bold text-navy mb-3">Work Schedule</h3>
+                    <p class="body-sm">
+                        Dialysis slots must work with <em class="not-italic font-semibold" style="color:var(--ink-2)">your</em> schedule, not the other way around.
                     </p>
                 </div>
             </div>
 
             <!-- 2 -->
-            <div class="lift rounded-3xl bg-white overflow-hidden" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
-                <div style="height:3px;background:linear-gradient(90deg,#DCCBFF,#F6F0FF);"></div>
-                <div class="p-8">
-                    <div class="flex items-start justify-between mb-7">
-                        <div class="w-14 h-14 g-lav rounded-2xl flex items-center justify-center shadow-sm">
-                            <svg width="26" height="26" fill="none" stroke="white" stroke-width="2.2">
-                                <circle cx="11" cy="11" r="7"/>
-                                <path d="m21 21-4.3-4.3"/>
-                            </svg>
-                        </div>
-                        <span class="font-display font-black text-6xl leading-none" style="color:rgba(21,21,58,.04);"></span>
+            <div class="card overflow-hidden reveal" style="--d:.14s;">
+                <div class="card-accent" style="background:linear-gradient(90deg,#DCCBFF,#F0E8FF);"></div>
+                <div class="p-7 md:p-8">
+                    <div class="icon-tile g-lav mb-7">
+                        <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="7"/>
+                            <path d="m20.5 20.5-4.2-4.2"/>
+                        </svg>
                     </div>
-                    <h3 class="font-semibold text-navy text-lg mb-3">Limited Visibility</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">
+                    <h3 class="h3 font-display font-bold text-navy mb-3">Limited Visibility</h3>
+                    <p class="body-sm">
                         Patients have no sight to the nearest vacant slots in real time.
                     </p>
                 </div>
             </div>
 
             <!-- 3 -->
-            <div class="lift rounded-3xl bg-white overflow-hidden" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
-                <div style="height:3px;background:linear-gradient(90deg,#FFC6E3,#FFB6D5);"></div>
-                <div class="p-8">
-                    <div class="flex items-start justify-between mb-7">
-                        <div class="w-14 h-14 g-pink rounded-2xl flex items-center justify-center shadow-sm">
-                            <svg width="26" height="26" fill="none" stroke="white" stroke-width="2.2">
-                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.8 19.8 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72 12.8 12.8 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.78a16 16 0 0 0 6.29 6.29l.94-.94a2 2 0 0 1 2.11-.45c.907.34 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-                            </svg>
-                        </div>
-                        <span class="font-display font-black text-6xl leading-none" style="color:rgba(21,21,58,.04);"></span>
+            <div class="card overflow-hidden reveal" style="--d:.22s;">
+                <div class="card-accent" style="background:linear-gradient(90deg,#FFC6E3,#FFB6D5);"></div>
+                <div class="p-7 md:p-8">
+                    <div class="icon-tile g-pink mb-7">
+                        <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.8 19.8 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72 12.8 12.8 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.78a16 16 0 0 0 6.29 6.29l.94-.94a2 2 0 0 1 2.11-.45c.907.34 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
                     </div>
-                    <h3 class="font-semibold text-navy text-lg mb-3">Manual Booking</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">
+                    <h3 class="h3 font-display font-bold text-navy mb-3">Manual Booking</h3>
+                    <p class="body-sm">
                         Calling multiple numbers just to find a single empty slot is exhausting.
                     </p>
                 </div>
             </div>
 
             <!-- 4 -->
-            <div class="lift rounded-3xl bg-white overflow-hidden" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
-                <div style="height:3px;background:linear-gradient(90deg,#7CC7FF,#DCCBFF);"></div>
-                <div class="p-8">
-                    <div class="flex items-start justify-between mb-7">
-                        <div class="w-14 h-14 g-care rounded-2xl flex items-center justify-center shadow-sm">
-                            <svg width="26" height="26" fill="none" stroke="white" stroke-width="2.2">
-                                <path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/>
-                            </svg>
-                        </div>
-                        <span class="font-display font-black text-6xl leading-none" style="color:rgba(21,21,58,.04);"></span>
+            <div class="card overflow-hidden reveal" style="--d:.3s;">
+                <div class="card-accent" style="background:linear-gradient(90deg,#7CC7FF,#DCCBFF);"></div>
+                <div class="p-7 md:p-8">
+                    <div class="icon-tile g-care mb-7">
+                        <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8h1a4 4 0 0 1 0 8h-1M3 8h15v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8zM7 2v3M11 2v3M15 2v3"/>
+                        </svg>
                     </div>
-                    <h3 class="font-semibold text-navy text-lg mb-3">Travel Barriers</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">
+                    <h3 class="h3 font-display font-bold text-navy mb-3">Travel Barriers</h3>
+                    <p class="body-sm">
                         Commuting challenges that prevent patients from accessing care and information.
                     </p>
                 </div>
@@ -425,24 +818,28 @@
 
 
 <!-- ─── MISSION / ABOUT ───────────────────────────────────── -->
-<section id="about" class="py-20 bg-white overflow-hidden">
-    <div class="max-w-7xl mx-auto px-8">
+<section id="about" class="py-24 md:py-32 relative overflow-hidden bg-white">
+    <!-- barely-there wash so the section is never flat white -->
+    <div class="absolute inset-0 pointer-events-none"
+         style="background:radial-gradient(900px 460px at 50% -4%, rgba(124,199,255,.09), transparent 64%);"></div>
+
+    <div class="relative max-w-6xl mx-auto px-6 sm:px-8">
 
         <!-- ── Centered heading block ── -->
-        <div class="text-center mb-10">
-            <p class="mb-5"><span class="section-badge">Our Vision</span></p>
-            <h2 class="font-display text-5xl md:text-[3.8rem] font-bold text-navy leading-tight mb-5">
-                A healthcare ecosystem<br>
+        <div class="text-center mb-14 md:mb-16">
+            <p class="mb-5 reveal"><span class="section-badge">Our Vision</span></p>
+            <h2 class="h2-lg font-display font-bold text-navy mb-6 reveal balance" style="--d:.08s;">
+                A healthcare ecosystem<br class="hidden sm:block">
                 <em>built for the patient</em>
             </h2>
-            <div class="w-12 h-0.5 mx-auto mb-5" style="background:linear-gradient(90deg,#7CC7FF,#DCCBFF);"></div>
-            <p class="text-gray-500 leading-relaxed max-w-2xl mx-auto mb-3">
+            <div class="rule mx-auto mb-7 reveal" style="--d:.14s;"></div>
+            <p class="lede max-w-2xl mx-auto mb-4 reveal balance" style="--d:.2s;">
                 We envision a future where dialysis treatment is no longer a logistical burden but a seamless part of a patient's life.
             </p>
-            <p class="text-gray-500 leading-relaxed max-w-xl mx-auto mb-7">
+            <p class="lede max-w-xl mx-auto mb-8 reveal balance" style="--d:.26s;">
                 Degup is bridging the gap between clinical needs and personal freedom, one new breath at a time.
             </p>
-            <div class="flex flex-wrap gap-3 justify-center">
+            <div class="flex flex-wrap gap-2.5 justify-center reveal" style="--d:.32s;">
                 <span class="section-badge">Patient-first</span>
                 <span class="section-badge">Community-driven</span>
                 <span class="section-badge">Made with heart</span>
@@ -450,72 +847,74 @@
         </div>
 
         <!-- ── Two equal media panels ── -->
-        <div class="grid md:grid-cols-2 gap-6">
+        <div class="grid md:grid-cols-2 gap-6 md:gap-7">
 
             <!-- LEFT: photo carousel -->
-            <div>
-                <p class="text-xs font-bold tracking-[.14em] uppercase mb-3 text-gray-400">In the Field</p>
-                <div class="aspect-[4/3] md:aspect-[3/2] rounded-[24px] overflow-hidden relative"
-                     style="box-shadow:0 16px 48px rgba(21,21,58,.11);">
+            <div class="reveal" style="--d:.08s;">
+                <p class="eyebrow mb-4" style="color:var(--ink-4);">In the Field</p>
+                <div class="carousel-frame frame aspect-[4/3] md:aspect-[16/11]">
                     <!-- slides strip -->
                     <div id="vision-carousel" class="flex h-full"
-                         style="transition: transform .7s cubic-bezier(.4,0,.2,1); transform: translateX(0%);">
+                         style="transition: transform .8s cubic-bezier(.16,1,.3,1); transform: translateX(0%);">
                         <div class="flex-shrink-0 w-full h-full">
                             <img src="https://github.com/seeashann02/Degup/blob/main/KKM.jpeg?raw=true"
-                                 class="w-full h-full object-cover object-center" alt="KKM" referrerpolicy="no-referrer">
+                                 class="w-full h-full object-cover object-center" alt="Degup team at the Ministry of Health" referrerpolicy="no-referrer" loading="lazy">
                         </div>
                         <div class="flex-shrink-0 w-full h-full">
                             <img src="https://github.com/seeashann02/Degup/blob/main/Medicare.jpeg?raw=true"
-                                 class="w-full h-full object-cover object-center" alt="Medicare" referrerpolicy="no-referrer">
+                                 class="w-full h-full object-cover object-center" alt="Degup team visiting a dialysis provider" referrerpolicy="no-referrer" loading="lazy">
                         </div>
                         <div class="flex-shrink-0 w-full h-full">
                             <img src="https://github.com/seeashann02/Degup/blob/main/ngo.png?raw=true"
-                                 class="w-full h-full object-cover object-center" alt="NGO" referrerpolicy="no-referrer">
+                                 class="w-full h-full object-cover object-center" alt="Degup working with NGO partners" referrerpolicy="no-referrer" loading="lazy">
                         </div>
                         <div class="flex-shrink-0 w-full h-full">
                             <img src="https://github.com/seeashann02/Degup/blob/main/nkf.jpeg?raw=true"
-                                 class="w-full h-full object-cover object-center" alt="NKF" referrerpolicy="no-referrer">
+                                 class="w-full h-full object-cover object-center" alt="Degup at the National Kidney Foundation Malaysia" referrerpolicy="no-referrer" loading="lazy">
                         </div>
                         <div class="flex-shrink-0 w-full h-full">
                             <img src="https://github.com/seeashann02/Degup/blob/main/WhatsApp%20Image%202026-05-06%20at%2010.08.56.jpeg?raw=true"
-                                 class="w-full h-full object-cover object-center" alt="Community" referrerpolicy="no-referrer">
+                                 class="w-full h-full object-cover object-center" alt="Degup engaging with the patient community" referrerpolicy="no-referrer" loading="lazy">
                         </div>
                     </div>
+
+                    <!-- scrim so controls stay legible over any photo -->
+                    <div class="absolute inset-x-0 bottom-0 h-24 pointer-events-none z-[3]"
+                         style="background:linear-gradient(to top,rgba(8,8,24,.42),transparent);"></div>
+
                     <!-- Prev -->
-                    <button onclick="visionPrev()"
-                            class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center z-10 transition-all hover:scale-110"
-                            style="background:rgba(255,255,255,.75);backdrop-filter:blur(8px);">
-                        <svg width="16" height="16" fill="none" stroke="#15153A" stroke-width="2.5" stroke-linecap="round"><path d="M10 4L6 8l4 4"/></svg>
+                    <button onclick="visionPrev()" aria-label="Previous photo"
+                            class="carousel-btn absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center z-[4]">
+                        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#15153A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5 5 8l4.5 4.5"/></svg>
                     </button>
                     <!-- Next -->
-                    <button onclick="visionNext()"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center z-10 transition-all hover:scale-110"
-                            style="background:rgba(255,255,255,.75);backdrop-filter:blur(8px);">
-                        <svg width="16" height="16" fill="none" stroke="#15153A" stroke-width="2.5" stroke-linecap="round"><path d="M6 4l4 4-4 4"/></svg>
+                    <button onclick="visionNext()" aria-label="Next photo"
+                            class="carousel-btn absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center z-[4]">
+                        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#15153A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.5 11 8l-4.5 4.5"/></svg>
                     </button>
                     <!-- Dots -->
-                    <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
-                        <button class="vision-dot active-vision-dot" onclick="visionGoTo(0)"></button>
-                        <button class="vision-dot"                   onclick="visionGoTo(1)"></button>
-                        <button class="vision-dot"                   onclick="visionGoTo(2)"></button>
-                        <button class="vision-dot"                   onclick="visionGoTo(3)"></button>
-                        <button class="vision-dot"                   onclick="visionGoTo(4)"></button>
+                    <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-[4]">
+                        <button class="vision-dot active-vision-dot" onclick="visionGoTo(0)" aria-label="Go to photo 1"></button>
+                        <button class="vision-dot"                   onclick="visionGoTo(1)" aria-label="Go to photo 2"></button>
+                        <button class="vision-dot"                   onclick="visionGoTo(2)" aria-label="Go to photo 3"></button>
+                        <button class="vision-dot"                   onclick="visionGoTo(3)" aria-label="Go to photo 4"></button>
+                        <button class="vision-dot"                   onclick="visionGoTo(4)" aria-label="Go to photo 5"></button>
                     </div>
                 </div>
             </div>
 
             <!-- RIGHT: YouTube video -->
-            <div>
-                <p class="text-xs font-bold tracking-[.14em] uppercase mb-3" style="color:#7CC7FF;">▶ Watch Our Story</p>
-                <div class="aspect-[4/3] md:aspect-[3/2] rounded-[24px] overflow-hidden"
-                     style="box-shadow:0 16px 48px rgba(21,21,58,.11);background:#0a0a1e;">
+            <div class="reveal" style="--d:.18s;">
+                <p class="eyebrow mb-4" style="color:#1C6FA8;">Watch Our Story</p>
+                <div class="frame aspect-[4/3] md:aspect-[16/11]" style="background:#0A0A1E;">
                     <iframe
-                        src="https://www.youtube.com/embed/brxf_f5mjm4?rel=0"
+                        src="https://www.youtube.com/embed/brxf_f5mjm4?rel=0&modestbranding=1"
+                        title="Degup — Connecting with Care"
                         width="100%" height="100%"
-                        frameborder="0"
+                        frameborder="0" loading="lazy"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen
-                        style="display:block;">
+                        style="display:block;position:relative;z-index:3;">
                     </iframe>
                 </div>
             </div>
@@ -526,73 +925,80 @@
 
 
 <!-- ─── HOW IT WORKS ──────────────────────────────────────── -->
-<section id="how-it-works" class="py-28 relative overflow-hidden" style="background:#f5f5f7;">
-    <div class="max-w-6xl mx-auto px-6 relative">
-        <div class="text-center mb-16">
-            <p class="mb-4"><span class="section-badge">How it works</span></p>
-            <h2 class="font-display text-4xl md:text-5xl font-bold text-navy mb-4">
+<section id="how-it-works" class="py-24 md:py-32 relative overflow-hidden bg-tint edge-top">
+    <div class="max-w-6xl mx-auto px-6 sm:px-8 relative">
+        <div class="text-center mb-16 md:mb-[4.5rem]">
+            <p class="mb-5 reveal"><span class="section-badge">How it works</span></p>
+            <h2 class="h2 font-display font-bold text-navy mb-5 reveal balance" style="--d:.08s;">
                 Three steps to <em>better care</em>
             </h2>
-            <p class="text-base max-w-md mx-auto leading-relaxed text-gray-400">
+            <p class="lede max-w-md mx-auto reveal balance" style="--d:.16s;">
                 Simple, flexible, and built around your schedule.
             </p>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-6">
-
-            <!-- Step 1 -->
-            <div class="bg-white rounded-3xl p-10 lift" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
-                <div class="w-14 h-14 g-blue rounded-2xl flex items-center justify-center mb-6">
-                    <svg width="22" height="22" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round">
-                        <circle cx="11" cy="11" r="9"/>
-                        <path d="M11 7v4l3 3"/>
-                    </svg>
-                </div>
-                <div class="text-xs font-bold tracking-widest uppercase mb-3" style="color:#7CC7FF;">Step 01</div>
-                <h3 class="font-display font-bold text-navy text-xl mb-3">Discover Nearby Slots</h3>
-                <p class="text-gray-400 leading-relaxed text-base">
-                    Explore dialysis centres and available treatment slots based on your location and timing preferences.
-                </p>
+        <div class="relative">
+            <!-- connector rail behind the cards (desktop only) -->
+            <div class="hidden md:block absolute left-[16.6%] right-[16.6%] top-[4.6rem] h-px pointer-events-none reveal" style="--d:.4s;">
+                <div class="w-full h-full" style="background:linear-gradient(90deg,rgba(124,199,255,.5),rgba(220,203,255,.5),rgba(255,198,227,.5));"></div>
             </div>
 
-            <!-- Step 2 -->
-            <div class="bg-white rounded-3xl p-10 lift" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
-                <div class="w-14 h-14 g-lav rounded-2xl flex items-center justify-center mb-6">
-                    <svg width="22" height="22" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round">
-                        <rect x="3" y="4" width="16" height="16" rx="2"/>
-                        <path d="M16 2v3M8 2v3M3 10h16M8 14h.01M12 14h.01M8 17h.01"/>
-                    </svg>
-                </div>
-                <div class="text-xs font-bold tracking-widest uppercase mb-3" style="color:#DCCBFF;">Step 02</div>
-                <h3 class="font-display font-bold text-navy text-xl mb-3">Flexible Scheduling</h3>
-                <p class="text-gray-400 leading-relaxed text-base">
-                    Select a session that fits your unique work and life routine — on your own terms.
-                </p>
-            </div>
+            <div class="grid md:grid-cols-3 gap-5 md:gap-6 relative">
 
-            <!-- Step 3 -->
-            <div class="bg-white rounded-3xl p-10 lift" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
-                <div class="w-14 h-14 g-pink rounded-2xl flex items-center justify-center mb-6">
-                    <svg width="22" height="22" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/>
-                        <circle cx="10" cy="7" r="4"/>
-                        <path d="M19 8v6M22 11h-6"/>
-                    </svg>
+                <!-- Step 1 -->
+                <div class="card p-8 md:p-9 reveal" style="--d:.06s;">
+                    <div class="icon-tile g-blue mb-7" style="box-shadow:0 4px 12px rgba(124,199,255,.4);">
+                        <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="M12 7.5V12l3 2.5"/>
+                        </svg>
+                    </div>
+                    <div class="label mb-3" style="color:#1C6FA8;">Step 01</div>
+                    <h3 class="font-display font-bold text-navy text-xl mb-3" style="letter-spacing:-.022em;">Discover Nearby Slots</h3>
+                    <p class="leading-[1.72]" style="color:var(--ink-3);">
+                        Explore dialysis centres and available treatment slots based on your location and timing preferences.
+                    </p>
                 </div>
-                <div class="text-xs font-bold tracking-widest uppercase mb-3" style="color:#FFC6E3;">Step 03</div>
-                <h3 class="font-display font-bold text-navy text-xl mb-3">Seamless Coordination</h3>
-                <p class="text-gray-400 leading-relaxed text-base">
-                    Get supported through the entire booking and treatment cycle, every step of the way.
-                </p>
-            </div>
 
+                <!-- Step 2 -->
+                <div class="card p-8 md:p-9 reveal" style="--d:.16s;">
+                    <div class="icon-tile g-lav mb-7" style="box-shadow:0 4px 12px rgba(220,203,255,.5);">
+                        <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="5" width="18" height="16" rx="2.5"/>
+                            <path d="M16 3v4M8 3v4M3 11h18M8 15h.01M12 15h.01M16 15h.01M8 18h.01M12 18h.01"/>
+                        </svg>
+                    </div>
+                    <div class="label mb-3" style="color:#7B5FC4;">Step 02</div>
+                    <h3 class="font-display font-bold text-navy text-xl mb-3" style="letter-spacing:-.022em;">Flexible Scheduling</h3>
+                    <p class="leading-[1.72]" style="color:var(--ink-3);">
+                        Select a session that fits your unique work and life routine — on your own terms.
+                    </p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="card p-8 md:p-9 reveal" style="--d:.26s;">
+                    <div class="icon-tile g-pink mb-7" style="box-shadow:0 4px 12px rgba(255,182,213,.5);">
+                        <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20"/>
+                            <circle cx="10" cy="7.5" r="3.5"/>
+                            <path d="M19 8.5v5M21.5 11h-5"/>
+                        </svg>
+                    </div>
+                    <div class="label mb-3" style="color:#B4407A;">Step 03</div>
+                    <h3 class="font-display font-bold text-navy text-xl mb-3" style="letter-spacing:-.022em;">Seamless Coordination</h3>
+                    <p class="leading-[1.72]" style="color:var(--ink-3);">
+                        Get supported through the entire booking and treatment cycle, every step of the way.
+                    </p>
+                </div>
+
+            </div>
         </div>
     </div>
 </section>
 
 
 <!-- ─── COMMUNITY / TEAM ──────────────────────────────────── -->
-<section class="py-28 relative overflow-hidden" style="background:linear-gradient(160deg,#15153A 0%,#1C1C4A 100%)">
+<section class="py-24 md:py-32 relative overflow-hidden grain" style="background:linear-gradient(160deg,#15153A 0%,#1C1C4A 62%,#211B52 100%)">
     <!-- subtle ECG texture background -->
     <div class="absolute inset-0 pointer-events-none ecg-texture">
         <svg width="100%" height="100%" viewBox="0 0 1440 500" preserveAspectRatio="xMidYMid slice" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -607,32 +1013,41 @@
                   stroke="white" stroke-width="1" stroke-linecap="round"/>
         </svg>
     </div>
-    <div class="max-w-6xl mx-auto px-6 relative">
-        <div class="grid md:grid-cols-2 gap-20 items-center">
+    <div class="max-w-6xl mx-auto px-6 sm:px-8 relative z-[2]">
+        <div class="grid md:grid-cols-2 gap-12 md:gap-16 lg:gap-20 items-center">
 
             <!-- copy -->
             <div>
-                <p class="label mb-5" style="color:#7CC7FF">Who we are</p>
-                <h2 class="font-display text-4xl md:text-[3.1rem] font-bold text-white leading-tight mb-7">
+                <p class="eyebrow mb-6 reveal" style="color:#7CC7FF">Who we are</p>
+                <h2 class="h2 font-display font-bold text-white mb-7 reveal" style="--d:.08s;">
                     Built for communities,<br>
                     <em style="color:#7CC7FF;font-style:normal;">powered by heart.</em>
                 </h2>
-                <p class="leading-relaxed mb-5" style="color:rgba(255,255,255,.6)">
+                <p class="leading-[1.75] mb-5 reveal" style="--d:.16s;color:rgba(255,255,255,.64)">
                     Degup is a multidisciplinary team from the SEEd.Lab Social Enterprise Programme, powered by PETRONAS and TCS. We are dedicated to redefining dialysis care access in Malaysia.
                 </p>
-                <p class="leading-relaxed mb-12" style="color:rgba(255,255,255,.6)">
+                <p class="leading-[1.75] reveal" style="--d:.22s;color:rgba(255,255,255,.64)">
                     Our approach combines deep technical expertise with a genuine commitment to community impact. We believe in technology that truly serves humanity.
                 </p>
-
             </div>
 
             <!-- team photo -->
-            <div class="relative">
-                <div class="rounded-3xl overflow-hidden aspect-[4/3] relative">
-                    <img src="https://github.com/seeashann02/Degup/blob/main/grouppic.jpg?raw=true" alt="The Degup Team" class="w-full h-full object-cover object-top" referrerpolicy="no-referrer">
-                    <div class="absolute top-4 left-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
-                        <p class="text-white text-xs font-semibold tracking-wide">Our Team</p>
+            <div class="relative reveal" style="--d:.14s;">
+                <div class="zoom-wrap relative rounded-[28px] overflow-hidden aspect-[4/3]"
+                     style="box-shadow:0 20px 50px rgba(0,0,0,.34), 0 50px 100px rgba(0,0,0,.24);">
+                    <img src="https://github.com/seeashann02/Degup/blob/main/grouppic.jpg?raw=true"
+                         alt="The Degup founding team" loading="lazy"
+                         class="zoom-img w-full h-full object-cover object-top" referrerpolicy="no-referrer">
+                    <!-- top scrim keeps the chip legible -->
+                    <div class="absolute inset-x-0 top-0 h-24 pointer-events-none"
+                         style="background:linear-gradient(to bottom,rgba(8,8,24,.4),transparent);"></div>
+                    <div class="absolute top-4 left-4 rounded-full px-3.5 py-1.5"
+                         style="background:rgba(255,255,255,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);">
+                        <p class="text-white text-[11px] font-bold tracking-[.12em] uppercase">Our Team</p>
                     </div>
+                    <!-- inner light-catch -->
+                    <div class="absolute inset-0 rounded-[28px] pointer-events-none"
+                         style="box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);"></div>
                 </div>
             </div>
         </div>
@@ -641,99 +1056,99 @@
 
 
 <!-- ─── FOUNDERS ─────────────────────────────────────────── -->
-<section class="py-28" style="background:#F8F9FC;">
-    <div class="max-w-7xl mx-auto px-6">
+<section class="py-24 md:py-32 bg-veil-alt">
+    <div class="max-w-6xl mx-auto px-6 sm:px-8">
 
-        <div class="text-center mb-16">
-            <p class="mb-4"><span class="section-badge">Meet the Team</span></p>
-            <h2 class="font-display text-4xl md:text-5xl font-bold text-navy leading-tight">
+        <div class="text-center mb-14 md:mb-16">
+            <p class="mb-5 reveal"><span class="section-badge">Meet the Team</span></p>
+            <h2 class="h2 font-display font-bold text-navy reveal balance" style="--d:.08s;">
                 The people <em>behind Degup</em>
             </h2>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
+        <div class="stagger grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-5">
 
             <!-- Eeashann -->
-            <div class="lift rounded-2xl overflow-hidden flex flex-col" style="box-shadow:0 4px 24px rgba(21,21,58,.09);">
+            <div class="lift zoom-wrap reveal rounded-[18px] overflow-hidden flex flex-col bg-white" style="border:1px solid var(--line);box-shadow:var(--e1);">
                 <div class="relative overflow-hidden" style="background:linear-gradient(160deg,#E8F4FF 0%,#EDE8FF 100%);aspect-ratio:3/4;">
                     <img src="https://github.com/seeashann02/Degup/blob/main/teampic/Eeashann.png?raw=true"
-                         alt="Eeashann" class="absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer">
+                         alt="Eeashann" class="zoom-img absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer" loading="lazy">
                 </div>
-                <div class="bg-white px-4 pt-4 pb-5 flex-1">
+                <div class="px-4 pt-4 pb-5 flex-1" style="border-top:1px solid rgba(21,21,58,.05);">
                     <h3 class="font-display font-bold text-navy text-sm leading-tight">Eeashann</h3>
-                    <p class="text-[11px] font-bold tracking-wide uppercase mt-0.5 mb-2.5" style="color:#7CC7FF;">Co-Founder</p>
-                    <div class="w-6 h-0.5 mb-2.5 rounded-full" style="background:#7CC7FF;opacity:.4;"></div>
-                    <p class="text-gray-400 text-[11px] leading-relaxed">Software Engineer and Founder passionate about scaling developer networks and community-centric ventures.</p>
+                    <p class="text-[10.5px] font-bold tracking-[.1em] uppercase mt-1 mb-2.5" style="color:#1C6FA8;">Co-Founder</p>
+                    <div class="w-7 h-0.5 mb-2.5 rounded-full" style="background:linear-gradient(90deg,#7CC7FF,#DCCBFF);"></div>
+                    <p class="text-[11px] leading-[1.6]" style="color:var(--ink-4);">Software Engineer and Founder passionate about scaling developer networks and community-centric ventures.</p>
                 </div>
             </div>
 
             <!-- Athirah -->
-            <div class="lift rounded-2xl overflow-hidden flex flex-col" style="box-shadow:0 4px 24px rgba(21,21,58,.09);">
+            <div class="lift zoom-wrap reveal rounded-[18px] overflow-hidden flex flex-col bg-white" style="border:1px solid var(--line);box-shadow:var(--e1);">
                 <div class="relative overflow-hidden" style="background:linear-gradient(160deg,#E8F4FF 0%,#EDE8FF 100%);aspect-ratio:3/4;">
                     <img src="https://github.com/seeashann02/Degup/blob/main/teampic/Athirah.png?raw=true"
-                         alt="Athirah" class="absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer">
+                         alt="Athirah" class="zoom-img absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer" loading="lazy">
                 </div>
-                <div class="bg-white px-4 pt-4 pb-5 flex-1">
+                <div class="px-4 pt-4 pb-5 flex-1" style="border-top:1px solid rgba(21,21,58,.05);">
                     <h3 class="font-display font-bold text-navy text-sm leading-tight">Athirah</h3>
-                    <p class="text-[11px] font-bold tracking-wide uppercase mt-0.5 mb-2.5" style="color:#7CC7FF;">Co-Founder</p>
-                    <div class="w-6 h-0.5 mb-2.5 rounded-full" style="background:#7CC7FF;opacity:.4;"></div>
-                    <p class="text-gray-400 text-[11px] leading-relaxed">Legal Professional with 6 years' experience in litigation, negotiation, and strategic advisory.</p>
+                    <p class="text-[10.5px] font-bold tracking-[.1em] uppercase mt-1 mb-2.5" style="color:#1C6FA8;">Co-Founder</p>
+                    <div class="w-7 h-0.5 mb-2.5 rounded-full" style="background:linear-gradient(90deg,#7CC7FF,#DCCBFF);"></div>
+                    <p class="text-[11px] leading-[1.6]" style="color:var(--ink-4);">Legal Professional with 6 years' experience in litigation, negotiation, and strategic advisory.</p>
                 </div>
             </div>
 
             <!-- Leon -->
-            <div class="lift rounded-2xl overflow-hidden flex flex-col" style="box-shadow:0 4px 24px rgba(21,21,58,.09);">
+            <div class="lift zoom-wrap reveal rounded-[18px] overflow-hidden flex flex-col bg-white" style="border:1px solid var(--line);box-shadow:var(--e1);">
                 <div class="relative overflow-hidden" style="background:linear-gradient(160deg,#E8F4FF 0%,#EDE8FF 100%);aspect-ratio:3/4;">
                     <img src="https://github.com/seeashann02/Degup/blob/main/teampic/Leon.png?raw=true"
-                         alt="Leon" class="absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer">
+                         alt="Leon" class="zoom-img absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer" loading="lazy">
                 </div>
-                <div class="bg-white px-4 pt-4 pb-5 flex-1">
+                <div class="px-4 pt-4 pb-5 flex-1" style="border-top:1px solid rgba(21,21,58,.05);">
                     <h3 class="font-display font-bold text-navy text-sm leading-tight">Leon</h3>
-                    <p class="text-[11px] font-bold tracking-wide uppercase mt-0.5 mb-2.5" style="color:#7CC7FF;">Co-Founder</p>
-                    <div class="w-6 h-0.5 mb-2.5 rounded-full" style="background:#7CC7FF;opacity:.4;"></div>
-                    <p class="text-gray-400 text-[11px] leading-relaxed">Master's in I/O Behavior Management, Western Michigan University. Startup, non-profit & corporate experience.</p>
+                    <p class="text-[10.5px] font-bold tracking-[.1em] uppercase mt-1 mb-2.5" style="color:#1C6FA8;">Co-Founder</p>
+                    <div class="w-7 h-0.5 mb-2.5 rounded-full" style="background:linear-gradient(90deg,#7CC7FF,#DCCBFF);"></div>
+                    <p class="text-[11px] leading-[1.6]" style="color:var(--ink-4);">Master's in I/O Behavior Management, Western Michigan University. Startup, non-profit & corporate experience.</p>
                 </div>
             </div>
 
             <!-- Nash -->
-            <div class="lift rounded-2xl overflow-hidden flex flex-col" style="box-shadow:0 4px 24px rgba(21,21,58,.09);">
+            <div class="lift zoom-wrap reveal rounded-[18px] overflow-hidden flex flex-col bg-white" style="border:1px solid var(--line);box-shadow:var(--e1);">
                 <div class="relative overflow-hidden" style="background:linear-gradient(160deg,#E8F4FF 0%,#EDE8FF 100%);aspect-ratio:3/4;">
                     <img src="https://github.com/seeashann02/Degup/blob/main/teampic/Nash.png?raw=true"
-                         alt="Nash" class="absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer">
+                         alt="Nash" class="zoom-img absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer" loading="lazy">
                 </div>
-                <div class="bg-white px-4 pt-4 pb-5 flex-1">
+                <div class="px-4 pt-4 pb-5 flex-1" style="border-top:1px solid rgba(21,21,58,.05);">
                     <h3 class="font-display font-bold text-navy text-sm leading-tight">Nash</h3>
-                    <p class="text-[11px] font-bold tracking-wide uppercase mt-0.5 mb-2.5" style="color:#7CC7FF;">Co-Founder</p>
-                    <div class="w-6 h-0.5 mb-2.5 rounded-full" style="background:#7CC7FF;opacity:.4;"></div>
-                    <p class="text-gray-400 text-[11px] leading-relaxed">Ecosystem Builder and Serial Entrepreneur enabling startup founders across SEA.</p>
+                    <p class="text-[10.5px] font-bold tracking-[.1em] uppercase mt-1 mb-2.5" style="color:#1C6FA8;">Co-Founder</p>
+                    <div class="w-7 h-0.5 mb-2.5 rounded-full" style="background:linear-gradient(90deg,#7CC7FF,#DCCBFF);"></div>
+                    <p class="text-[11px] leading-[1.6]" style="color:var(--ink-4);">Ecosystem Builder and Serial Entrepreneur enabling startup founders across SEA.</p>
                 </div>
             </div>
 
             <!-- Lydia -->
-            <div class="lift rounded-2xl overflow-hidden flex flex-col" style="box-shadow:0 4px 24px rgba(21,21,58,.09);">
+            <div class="lift zoom-wrap reveal rounded-[18px] overflow-hidden flex flex-col bg-white" style="border:1px solid var(--line);box-shadow:var(--e1);">
                 <div class="relative overflow-hidden" style="background:linear-gradient(160deg,#E8F4FF 0%,#EDE8FF 100%);aspect-ratio:3/4;">
                     <img src="https://github.com/seeashann02/Degup/blob/main/teampic/Lydia.png?raw=true"
-                         alt="Lydia" class="absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer">
+                         alt="Lydia" class="zoom-img absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer" loading="lazy">
                 </div>
-                <div class="bg-white px-4 pt-4 pb-5 flex-1">
+                <div class="px-4 pt-4 pb-5 flex-1" style="border-top:1px solid rgba(21,21,58,.05);">
                     <h3 class="font-display font-bold text-navy text-sm leading-tight">Lydia</h3>
-                    <p class="text-[11px] font-bold tracking-wide uppercase mt-0.5 mb-2.5" style="color:#7CC7FF;">Co-Founder</p>
-                    <div class="w-6 h-0.5 mb-2.5 rounded-full" style="background:#7CC7FF;opacity:.4;"></div>
-                    <p class="text-gray-400 text-[11px] leading-relaxed">Serial Entrepreneur with 8 years in business management and finance, building impact-driven ventures.</p>
+                    <p class="text-[10.5px] font-bold tracking-[.1em] uppercase mt-1 mb-2.5" style="color:#1C6FA8;">Co-Founder</p>
+                    <div class="w-7 h-0.5 mb-2.5 rounded-full" style="background:linear-gradient(90deg,#7CC7FF,#DCCBFF);"></div>
+                    <p class="text-[11px] leading-[1.6]" style="color:var(--ink-4);">Serial Entrepreneur with 8 years in business management and finance, building impact-driven ventures.</p>
                 </div>
             </div>
 
             <!-- Haziq -->
-            <div class="lift rounded-2xl overflow-hidden flex flex-col" style="box-shadow:0 4px 24px rgba(21,21,58,.09);">
+            <div class="lift zoom-wrap reveal rounded-[18px] overflow-hidden flex flex-col bg-white" style="border:1px solid var(--line);box-shadow:var(--e1);">
                 <div class="relative overflow-hidden" style="background:linear-gradient(160deg,#E8F4FF 0%,#EDE8FF 100%);aspect-ratio:3/4;">
                     <img src="https://github.com/seeashann02/Degup/blob/main/teampic/Haziq.png?raw=true"
-                         alt="Haziq" class="absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer">
+                         alt="Haziq" class="zoom-img absolute inset-0 w-full h-full object-cover object-top" referrerpolicy="no-referrer" loading="lazy">
                 </div>
-                <div class="bg-white px-4 pt-4 pb-5 flex-1">
+                <div class="px-4 pt-4 pb-5 flex-1" style="border-top:1px solid rgba(21,21,58,.05);">
                     <h3 class="font-display font-bold text-navy text-sm leading-tight">Haziq</h3>
-                    <p class="text-[11px] font-bold tracking-wide uppercase mt-0.5 mb-2.5" style="color:#7CC7FF;">Co-Founder</p>
-                    <div class="w-6 h-0.5 mb-2.5 rounded-full" style="background:#7CC7FF;opacity:.4;"></div>
-                    <p class="text-gray-400 text-[11px] leading-relaxed">Social Worker with 8 years across government agencies, NGOs, and community development.</p>
+                    <p class="text-[10.5px] font-bold tracking-[.1em] uppercase mt-1 mb-2.5" style="color:#1C6FA8;">Co-Founder</p>
+                    <div class="w-7 h-0.5 mb-2.5 rounded-full" style="background:linear-gradient(90deg,#7CC7FF,#DCCBFF);"></div>
+                    <p class="text-[11px] leading-[1.6]" style="color:var(--ink-4);">Social Worker with 8 years across government agencies, NGOs, and community development.</p>
                 </div>
             </div>
 
@@ -743,19 +1158,27 @@
 
 
 <!-- ─── PARTNERS ──────────────────────────────────────────── -->
-<section class="py-24 bg-white">
-    <div class="max-w-3xl mx-auto px-6">
-        <div class="text-center mb-16">
-            <p class="mb-4"><span class="section-badge">Ecosystem Partners</span></p>
+<section class="py-24 md:py-28 bg-white relative overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none"
+         style="background:radial-gradient(760px 380px at 50% 50%, rgba(124,199,255,.07), transparent 68%);"></div>
+
+    <div class="relative max-w-3xl mx-auto px-6 sm:px-8">
+        <div class="text-center mb-12">
+            <p class="reveal"><span class="section-badge">Ecosystem Partners</span></p>
         </div>
+
         <!-- main card — clickable -->
         <a href="https://www.seedlab.my/" target="_blank" rel="noopener noreferrer"
-           class="block bg-lgrey rounded-[32px] p-10 transition-all hover:shadow-lg hover:bg-white">
-            <img src="https://www.toruslabs.my/images/logo/seed.lab-block-logo-hr.webp" alt="SEEd.Lab" class="w-full h-auto" referrerpolicy="no-referrer">
+           class="reveal group block rounded-[var(--r-xl)] p-10 md:p-12 transition-all duration-[.34s]"
+           style="--d:.08s;background:linear-gradient(180deg,#F7F8FC,#F2F4FA);border:1px solid var(--line);box-shadow:var(--e1);"
+           onmouseover="this.style.background='#fff';this.style.boxShadow='var(--e3)';this.style.borderColor='rgba(124,199,255,.42)';this.style.transform='translateY(-4px)'"
+           onmouseout="this.style.background='linear-gradient(180deg,#F7F8FC,#F2F4FA)';this.style.boxShadow='var(--e1)';this.style.borderColor='var(--line)';this.style.transform='none'">
+            <img src="https://www.toruslabs.my/images/logo/seed.lab-block-logo-hr.webp"
+                 alt="SEEd.Lab" class="w-full h-auto" referrerpolicy="no-referrer" loading="lazy">
         </a>
 
         <!-- bottom caption -->
-        <p class="text-center mt-8 text-xs font-bold tracking-[.18em] uppercase text-gray-300">
+        <p class="text-center mt-9 text-[10.5px] font-bold tracking-[.18em] uppercase reveal" style="--d:.16s;color:var(--ink-4);">
             Powered by SEEd.Lab &bull; PETRONAS &bull; TCS
         </p>
     </div>
@@ -763,26 +1186,27 @@
 
 
 <!-- ─── CTA ───────────────────────────────────────────────── -->
-<section class="py-28 relative overflow-hidden" style="background:linear-gradient(160deg,#15153A 0%,#1C1C4A 100%)">
-    <div class="absolute inset-0 opacity-20"
-         style="background:radial-gradient(ellipse at 70% 50%,#7CC7FF 0%,transparent 55%)"></div>
+<section class="py-24 md:py-32 relative overflow-hidden grain" style="background:linear-gradient(160deg,#15153A 0%,#1C1C4A 62%,#211B52 100%)">
+    <div class="absolute inset-0 opacity-[.22]"
+         style="background:radial-gradient(ellipse 70% 60% at 72% 44%,#7CC7FF 0%,transparent 58%)"></div>
+    <div class="absolute inset-0 opacity-[.14]"
+         style="background:radial-gradient(ellipse 60% 55% at 22% 78%,#DCCBFF 0%,transparent 60%)"></div>
 
-    <div class="relative max-w-4xl mx-auto px-6 text-center">
-        <h2 class="font-display text-5xl md:text-6xl font-bold text-white leading-tight mb-7">
+    <div class="relative z-[2] max-w-4xl mx-auto px-6 sm:px-8 text-center">
+        <h2 class="h2-lg font-display font-bold text-white mb-7 reveal balance">
             Let's shape the<br><em style="color:#7CC7FF;font-style:normal;">future together</em>
         </h2>
-        <p class="text-lg max-w-2xl mx-auto mb-12 leading-relaxed" style="color:rgba(255,255,255,.6)">
+        <p class="max-w-2xl mx-auto mb-11 leading-[1.7] reveal balance"
+           style="--d:.1s;font-size:clamp(1rem,.95rem + .25vw,1.15rem);color:rgba(255,255,255,.64)">
             We are connecting with healthcare stakeholders and dialysis providers to redefine care coordination in Malaysia.
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <div class="flex flex-col sm:flex-row gap-3 justify-center items-center reveal" style="--d:.2s;">
             <a href="https://wa.me/601176344216?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda."
                target="_blank" rel="noopener noreferrer"
-               class="bg-white text-navy px-10 py-4 rounded-full font-medium shadow-xl hover:shadow-2xl transition-all text-sm">
-                Talk to us →
+               class="btn btn-white w-full sm:w-auto">
+                Talk to us <span class="btn-arrow">→</span>
             </a>
-            <a href="mailto:hello@degup.my"
-               class="text-white px-10 py-4 rounded-full font-medium border transition-all text-sm hover:bg-white/10"
-               style="border-color:rgba(255,255,255,.3)">
+            <a href="mailto:hello@degup.my" class="btn btn-glass w-full sm:w-auto">
                 Become a partner
             </a>
         </div>
@@ -791,57 +1215,54 @@
 
 
 <!-- ─── KIDNEY EDUCATION ──────────────────────────────────── -->
-<section id="kidney-health" class="py-28 relative overflow-hidden" style="background:linear-gradient(180deg,#ffffff 0%,#F4F6FB 50%,#ffffff 100%)">
+<section id="kidney-health" class="py-24 md:py-32 relative overflow-hidden bg-veil-alt edge-top">
 
-    <div class="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(124,199,255,.10) 0%,transparent 70%);transform:translate(30%,-30%)"></div>
-    <div class="absolute bottom-0 left-0 w-80 h-80 rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(220,203,255,.10) 0%,transparent 70%);transform:translate(-30%,30%)"></div>
+    <div class="relative max-w-6xl mx-auto px-6 sm:px-8">
 
-    <div class="relative max-w-6xl mx-auto px-6">
-
-        <div class="text-center mb-16">
-            <p class="mb-5"><span class="section-badge">Kidney Health</span></p>
-            <h2 class="font-display text-4xl md:text-[3.2rem] font-bold text-navy leading-tight mb-5">
+        <div class="text-center mb-14 md:mb-16">
+            <p class="mb-5 reveal"><span class="section-badge">Kidney Health</span></p>
+            <h2 class="h2 font-display font-bold text-navy mb-6 reveal balance" style="--d:.08s;">
                 Understanding <em>Kidney Disease</em>
             </h2>
-            <p class="text-gray-400 text-lg max-w-xl mx-auto leading-relaxed">
+            <p class="lede max-w-xl mx-auto reveal balance" style="--d:.16s;">
                 Learn the basics of kidney disease and kidney replacement therapy from trusted healthcare organisations.
             </p>
         </div>
 
-        <div class="grid md:grid-cols-[1fr_0.9fr] gap-7 items-start">
+        <div class="grid md:grid-cols-[1fr_0.92fr] gap-5 md:gap-6 items-start">
 
-            <div class="flex flex-col gap-6">
+            <div class="flex flex-col gap-5 md:gap-6">
 
-                <div class="lift rounded-3xl bg-white overflow-hidden" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
-                    <div style="height:3px;background:linear-gradient(90deg,#7CC7FF,#D0F4FF);"></div>
-                    <div class="p-8">
+                <div class="card overflow-hidden reveal" style="--d:.06s;">
+                    <div class="card-accent" style="background:linear-gradient(90deg,#7CC7FF,#D0F4FF);"></div>
+                    <div class="p-7 md:p-8">
                         <div class="flex items-start gap-4 mb-5">
-                            <div class="w-12 h-12 g-blue rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <div class="icon-tile g-blue" style="width:46px;height:46px;border-radius:13px;">
+                                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M12 21C12 21 5 15 5 9a7 7 0 0 1 14 0c0 6-7 12-7 12z"/>
                                     <circle cx="12" cy="9" r="2.5"/>
                                 </svg>
                             </div>
-                            <h3 class="font-display font-bold text-navy text-[1.1rem] leading-snug mt-1">What is Chronic Kidney Disease (CKD)?</h3>
+                            <h3 class="h3 font-display font-bold text-navy mt-1.5">What is Chronic Kidney Disease (CKD)?</h3>
                         </div>
-                        <p class="text-gray-500 text-sm leading-relaxed">
+                        <p class="body-sm">
                             CKD is a gradual and permanent loss of kidney function, most commonly caused by diabetes, high blood pressure, or other chronic conditions. It often develops silently over years. Early detection and treatment can help slow its progression significantly and delay the need for kidney replacement therapy.
                         </p>
                     </div>
                 </div>
 
-                <div class="lift rounded-3xl bg-white overflow-hidden" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
-                    <div style="height:3px;background:linear-gradient(90deg,#DCCBFF,#F6F0FF);"></div>
-                    <div class="p-8">
+                <div class="card overflow-hidden reveal" style="--d:.14s;">
+                    <div class="card-accent" style="background:linear-gradient(90deg,#DCCBFF,#F0E8FF);"></div>
+                    <div class="p-7 md:p-8">
                         <div class="flex items-start gap-4 mb-5">
-                            <div class="w-12 h-12 g-lav rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                            <div class="icon-tile g-lav" style="width:46px;height:46px;border-radius:13px;">
+                                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="22 12 18 12 15 20 9 4 6 12 2 12"/>
                                 </svg>
                             </div>
-                            <h3 class="font-display font-bold text-navy text-[1.1rem] leading-snug mt-1">What is Kidney Replacement Therapy (KRT)?</h3>
+                            <h3 class="h3 font-display font-bold text-navy mt-1.5">What is Kidney Replacement Therapy (KRT)?</h3>
                         </div>
-                        <p class="text-gray-500 text-sm leading-relaxed">
+                        <p class="body-sm">
                             When kidneys can no longer perform their function adequately, KRT becomes necessary to sustain life. Treatments include haemodialysis, peritoneal dialysis, and kidney transplantation — each designed to replicate the essential filtering and balancing functions the kidneys can no longer perform on their own.
                         </p>
                     </div>
@@ -849,43 +1270,43 @@
 
             </div>
 
-            <div class="lift rounded-3xl bg-white overflow-hidden" style="box-shadow:0 2px 24px rgba(21,21,58,.07);">
-                <div style="height:3px;background:linear-gradient(90deg,#7CC7FF,#DCCBFF,#FFC6E3);"></div>
-                <div class="p-8">
-                    <div class="mb-7">
-                        <h3 class="font-display font-bold text-navy text-[1.1rem] mb-2">Learn more from trusted sources</h3>
-                        <p class="text-gray-400 text-xs leading-relaxed">Official Malaysian healthcare organisations providing reliable kidney health information.</p>
+            <div class="card overflow-hidden reveal" style="--d:.22s;">
+                <div class="card-accent" style="background:linear-gradient(90deg,#7CC7FF,#DCCBFF,#FFC6E3);"></div>
+                <div class="p-7 md:p-8">
+                    <div class="mb-6">
+                        <h3 class="h3 font-display font-bold text-navy mb-2">Learn more from trusted sources</h3>
+                        <p class="text-xs leading-[1.65]" style="color:var(--ink-4);">Official Malaysian healthcare organisations providing reliable kidney health information.</p>
                     </div>
-                    <div class="flex flex-col gap-3">
+                    <div class="flex flex-col gap-2.5">
 
                         <a href="https://www.moh.gov.my/" target="_blank" rel="noopener noreferrer"
-                           class="flex items-center gap-4 p-4 rounded-2xl border transition-all group hover:shadow-md" style="border-color:#edf0f7;">
-                            <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 font-display font-black text-[11px] text-white" style="background:linear-gradient(135deg,#1a5fa0,#2B87C8);">KKM</div>
+                           class="res-row flex items-center gap-4 p-3.5">
+                            <div class="w-10 h-10 rounded-[11px] flex items-center justify-center flex-shrink-0 font-display font-black text-[10.5px] text-white" style="background:linear-gradient(135deg,#1A5FA0,#2B87C8);box-shadow:0 2px 8px rgba(26,95,160,.28);">KKM</div>
                             <div class="flex-1 min-w-0">
-                                <p class="font-semibold text-navy text-sm leading-tight">Ministry of Health Malaysia</p>
-                                <p class="text-gray-400 text-xs mt-0.5">National health policy and clinical guidelines</p>
+                                <p class="font-semibold text-navy text-[.845rem] leading-tight">Ministry of Health Malaysia</p>
+                                <p class="text-[11.5px] mt-1" style="color:var(--ink-4);">National health policy and clinical guidelines</p>
                             </div>
-                            <svg class="flex-shrink-0 text-gray-300 group-hover:text-navy transition-colors" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4v4M14 2 7 9M6 4H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-3"/></svg>
+                            <svg class="res-arrow flex-shrink-0" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#B4B4C6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4v4M14 2 7 9M6 4H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-3"/></svg>
                         </a>
 
                         <a href="https://www.nkf.org.my/" target="_blank" rel="noopener noreferrer"
-                           class="flex items-center gap-4 p-4 rounded-2xl border transition-all group hover:shadow-md" style="border-color:#edf0f7;">
-                            <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 font-display font-black text-[11px] text-white" style="background:linear-gradient(135deg,#2B87C8,#7CC7FF);">NKF</div>
+                           class="res-row flex items-center gap-4 p-3.5">
+                            <div class="w-10 h-10 rounded-[11px] flex items-center justify-center flex-shrink-0 font-display font-black text-[10.5px] text-white" style="background:linear-gradient(135deg,#2B87C8,#7CC7FF);box-shadow:0 2px 8px rgba(43,135,200,.28);">NKF</div>
                             <div class="flex-1 min-w-0">
-                                <p class="font-semibold text-navy text-sm leading-tight">National Kidney Foundation Malaysia</p>
-                                <p class="text-gray-400 text-xs mt-0.5">Patient support, education and kidney health resources</p>
+                                <p class="font-semibold text-navy text-[.845rem] leading-tight">National Kidney Foundation Malaysia</p>
+                                <p class="text-[11.5px] mt-1" style="color:var(--ink-4);">Patient support, education and kidney health resources</p>
                             </div>
-                            <svg class="flex-shrink-0 text-gray-300 group-hover:text-navy transition-colors" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4v4M14 2 7 9M6 4H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-3"/></svg>
+                            <svg class="res-arrow flex-shrink-0" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#B4B4C6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4v4M14 2 7 9M6 4H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-3"/></svg>
                         </a>
 
                         <a href="https://www.mybuahpinggang.com/" target="_blank" rel="noopener noreferrer"
-                           class="flex items-center gap-4 p-4 rounded-2xl border transition-all group hover:shadow-md" style="border-color:#edf0f7;">
-                            <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 font-display font-black text-[10px] text-white" style="background:linear-gradient(135deg,#7CC7FF,#DCCBFF);">MBP</div>
+                           class="res-row flex items-center gap-4 p-3.5">
+                            <div class="w-10 h-10 rounded-[11px] flex items-center justify-center flex-shrink-0 font-display font-black text-[10px] text-white" style="background:linear-gradient(135deg,#7CC7FF,#B9A7E8);box-shadow:0 2px 8px rgba(124,199,255,.34);">MBP</div>
                             <div class="flex-1 min-w-0">
-                                <p class="font-semibold text-navy text-sm leading-tight">MyBuahPinggang</p>
-                                <p class="text-gray-400 text-xs mt-0.5">Malaysian kidney health awareness and education portal</p>
+                                <p class="font-semibold text-navy text-[.845rem] leading-tight">MyBuahPinggang</p>
+                                <p class="text-[11.5px] mt-1" style="color:var(--ink-4);">Malaysian kidney health awareness and education portal</p>
                             </div>
-                            <svg class="flex-shrink-0 text-gray-300 group-hover:text-navy transition-colors" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4v4M14 2 7 9M6 4H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-3"/></svg>
+                            <svg class="res-arrow flex-shrink-0" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#B4B4C6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4v4M14 2 7 9M6 4H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-3"/></svg>
                         </a>
 
                     </div>
@@ -894,7 +1315,7 @@
 
         </div>
 
-        <p class="text-center text-xs leading-relaxed mt-12 max-w-2xl mx-auto" style="color:rgba(21,21,58,.3);">
+        <p class="text-center text-xs leading-[1.7] mt-12 max-w-2xl mx-auto reveal balance" style="--d:.3s;color:var(--ink-4);">
             Educational information is provided for public awareness. For personalised medical advice, please consult your healthcare professional.
         </p>
 
@@ -903,29 +1324,31 @@
 
 
 <!-- ─── FAQ ───────────────────────────────────────────────── -->
-<section id="faq" class="py-28 bg-white">
+<section id="faq" class="py-24 md:py-32 bg-white relative overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none"
+         style="background:radial-gradient(820px 420px at 50% 0%, rgba(220,203,255,.10), transparent 66%);"></div>
 
-    <div class="max-w-6xl mx-auto px-6">
+    <div class="relative max-w-6xl mx-auto px-6 sm:px-8">
 
         <!-- centred top header -->
-        <div class="text-center mb-16">
-            <p class="mb-4"><span class="section-badge">Got questions?</span></p>
-            <h2 class="font-display text-4xl md:text-5xl font-bold text-navy leading-tight mb-4">
+        <div class="text-center mb-14 md:mb-16">
+            <p class="mb-5 reveal"><span class="section-badge">Got questions?</span></p>
+            <h2 class="h2 font-display font-bold text-navy mb-5 reveal balance" style="--d:.08s;">
                 Everything you need to <em>know</em>
             </h2>
-            <p class="text-gray-400 max-w-md mx-auto leading-relaxed">
+            <p class="lede max-w-md mx-auto reveal balance" style="--d:.16s;">
                 Can't find what you're looking for? Reach out and we'll get back to you.
             </p>
         </div>
 
         <!-- two-col accordion -->
-        <div class="grid md:grid-cols-2 gap-5 mb-14" id="faq-list"></div>
+        <div class="stagger grid md:grid-cols-2 gap-4 md:gap-5 mb-14" id="faq-list"></div>
 
         <!-- CTA row -->
-        <div class="text-center">
+        <div class="text-center reveal">
             <a href="https://wa.me/601176344216?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda." target="_blank" rel="noopener noreferrer"
-               class="inline-flex items-center gap-2 bg-navy text-white px-7 py-3.5 rounded-full text-sm font-semibold hover:opacity-90 transition-all shadow-lg">
-                Ask us directly →
+               class="btn btn-navy">
+                Ask us directly <span class="btn-arrow">→</span>
             </a>
         </div>
     </div>
@@ -933,32 +1356,39 @@
 
 
 <!-- ─── FOOTER ────────────────────────────────────────────── -->
-<footer class="py-16" style="background:#15153A">
-    <div class="max-w-6xl mx-auto px-6">
-        <div class="grid md:grid-cols-3 gap-12 mb-14">
+<footer class="pt-16 pb-10 relative overflow-hidden" style="background:#15153A">
+    <!-- hairline of brand colour along the top edge -->
+    <div class="absolute top-0 left-0 right-0 h-px" style="background:linear-gradient(90deg,transparent,rgba(124,199,255,.45) 24%,rgba(220,203,255,.45) 62%,transparent);"></div>
+
+    <div class="relative max-w-6xl mx-auto px-6 sm:px-8">
+        <div class="grid md:grid-cols-3 gap-10 md:gap-12 mb-14">
             <!-- brand -->
             <div>
                 <div class="flex items-center gap-2.5 mb-4">
-                    <img src="https://github.com/seeashann02/Degup/blob/main/logo-transparent-without%20name.png?raw=true" alt="Degup logo" style="width:38px;height:38px;object-fit:contain;flex-shrink:0;">
-                    <span class="font-display font-semibold text-xl text-white tracking-tight">DEGUP</span>
+                    <img src="https://github.com/seeashann02/Degup/blob/main/logo-transparent-without%20name.png?raw=true" alt="" width="36" height="36" style="width:36px;height:36px;object-fit:contain;flex-shrink:0;">
+                    <span class="font-display font-bold text-[1.22rem] text-white tracking-[-.02em]">DEGUP</span>
                 </div>
-                <p class="text-sm leading-relaxed mb-6" style="color:rgba(255,255,255,.4)">
+                <p class="text-sm leading-[1.75] mb-6 max-w-[30ch]" style="color:rgba(255,255,255,.44)">
                     Making dialysis scheduling simpler and easier for patients in Malaysia.
                 </p>
                 <!-- social icons -->
                 <div class="flex items-center gap-3">
                     <!-- Facebook -->
                     <a href="https://www.facebook.com/dialisdankerjaya" target="_blank" rel="noopener noreferrer"
-                       class="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:bg-white/20"
-                       style="background:rgba(255,255,255,.08)">
+                       class="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-[.34s] hover:-translate-y-0.5"
+                       style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09)"
+                       onmouseover="this.style.background='rgba(255,255,255,.16)';this.style.borderColor='rgba(255,255,255,.2)'"
+                       onmouseout="this.style.background='rgba(255,255,255,.07)';this.style.borderColor='rgba(255,255,255,.09)'">
                         <svg width="16" height="16" fill="white" viewBox="0 0 24 24">
                             <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
                         </svg>
                     </a>
                     <!-- Instagram -->
                     <a href="https://www.instagram.com/degup.my" target="_blank" rel="noopener noreferrer"
-                       class="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:bg-white/20"
-                       style="background:rgba(255,255,255,.08)">
+                       class="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-[.34s] hover:-translate-y-0.5"
+                       style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09)"
+                       onmouseover="this.style.background='rgba(255,255,255,.16)';this.style.borderColor='rgba(255,255,255,.2)'"
+                       onmouseout="this.style.background='rgba(255,255,255,.07)';this.style.borderColor='rgba(255,255,255,.09)'">
                         <svg width="16" height="16" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 24 24">
                             <rect x="2" y="2" width="20" height="20" rx="5"/>
                             <circle cx="12" cy="12" r="4"/>
@@ -967,8 +1397,10 @@
                     </a>
                     <!-- TikTok -->
                     <a href="https://www.tiktok.com/@dialisisdankerjaya" target="_blank" rel="noopener noreferrer"
-                       class="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:bg-white/20"
-                       style="background:rgba(255,255,255,.08)">
+                       class="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-[.34s] hover:-translate-y-0.5"
+                       style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09)"
+                       onmouseover="this.style.background='rgba(255,255,255,.16)';this.style.borderColor='rgba(255,255,255,.2)'"
+                       onmouseout="this.style.background='rgba(255,255,255,.07)';this.style.borderColor='rgba(255,255,255,.09)'">
                         <svg width="16" height="16" fill="white" viewBox="0 0 24 24">
                             <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/>
                         </svg>
@@ -977,16 +1409,16 @@
             </div>
             <!-- contacts -->
             <div>
-                <p class="text-xs font-semibold text-white mb-4 tracking-wider uppercase">Contacts</p>
-                <ul class="space-y-2">
-                    <li><a href="mailto:hello@degup.my" class="text-sm hover:text-white transition-colors" style="color:rgba(255,255,255,.4)">hello@degup.my</a></li>
-                    <li><a href="tel:+60132370520"       class="text-sm hover:text-white transition-colors" style="color:rgba(255,255,255,.4)">+60 13 237 0520</a></li>
+                <p class="label text-white mb-5">Contacts</p>
+                <ul class="space-y-2.5">
+                    <li><a href="mailto:hello@degup.my" class="text-sm transition-colors hover:text-white" style="color:rgba(255,255,255,.44)">hello@degup.my</a></li>
+                    <li><a href="tel:+60132370520"      class="text-sm transition-colors hover:text-white" style="color:rgba(255,255,255,.44)">+60 13 237 0520</a></li>
                 </ul>
             </div>
             <!-- location -->
             <div>
-                <p class="text-xs font-semibold text-white mb-4 tracking-wider uppercase">Location</p>
-                <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,.4)">
+                <p class="label text-white mb-5">Location</p>
+                <p class="text-sm leading-[1.75]" style="color:rgba(255,255,255,.44)">
                     Level 2, Tower 3, Bangsar South City,<br>
                     59200, Kuala Lumpur, Malaysia
                 </p>
@@ -994,9 +1426,9 @@
         </div>
 
         <div class="border-t flex flex-col md:flex-row justify-between items-center gap-3 pt-8"
-             style="border-color:rgba(255,255,255,.08)">
-            <p class="text-xs" style="color:rgba(255,255,255,.25)">© 2026 Degup</p>
-            <p class="text-xs" style="color:rgba(255,255,255,.25)">A SEEd.Lab Social Enterprise</p>
+             style="border-color:rgba(255,255,255,.07)">
+            <p class="text-xs" style="color:rgba(255,255,255,.28)">© 2026 Degup</p>
+            <p class="text-xs" style="color:rgba(255,255,255,.28)">A SEEd.Lab Social Enterprise</p>
         </div>
     </div>
 </footer>
@@ -1039,18 +1471,21 @@ const list = document.getElementById('faq-list');
 
 faqs.forEach((item, i) => {
     const el = document.createElement('div');
-    el.className = 'faq-card rounded-2xl overflow-hidden self-start relative';
+    el.className = 'faq-card reveal overflow-hidden self-start relative';
     el.innerHTML = `
         <div class="faq-open-bar"></div>
         <button class="w-full text-left px-6 py-5 flex items-start justify-between gap-4"
-                onclick="toggleFaq(${i})" id="faq-btn-${i}">
-            <span class="font-semibold text-navy text-sm leading-snug">${item.q}</span>
-            <span id="faq-icon-${i}"
-                  class="faq-plus flex-shrink-0 w-7 h-7 rounded-full bg-lgrey flex items-center justify-center text-base font-light text-gray-400 transition-all leading-none" style="margin-top:1px;">+</span>
+                onclick="toggleFaq(${i})" id="faq-btn-${i}"
+                aria-expanded="false" aria-controls="faq-body-${i}">
+            <span class="font-semibold text-navy text-[.875rem] leading-[1.45]">${item.q}</span>
+            <span id="faq-icon-${i}" aria-hidden="true"
+                  class="faq-plus flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-base font-light leading-none"
+                  style="margin-top:1px;background:#F2F4FA;color:#9A9AB0;">+</span>
         </button>
-        <div id="faq-body-${i}" class="faq-body">
-            <div class="px-6 pb-5" style="border-top:1px solid #f0f2f8;">
-                <p class="text-gray-500 text-sm leading-relaxed pt-4">${item.a}</p>
+        <div id="faq-body-${i}" class="faq-body" role="region" aria-labelledby="faq-btn-${i}">
+            <div class="px-6 pb-5">
+                <div style="border-top:1px solid rgba(21,21,58,.06);"></div>
+                <p class="text-[.845rem] leading-[1.72] pt-4" style="color:var(--ink-3);">${item.a}</p>
             </div>
         </div>
     `;
@@ -1060,46 +1495,134 @@ faqs.forEach((item, i) => {
 function toggleFaq(i) {
     const body = document.getElementById('faq-body-' + i);
     const icon = document.getElementById('faq-icon-' + i);
+    const btn  = document.getElementById('faq-btn-' + i);
     const card = icon.closest('.faq-card');
     const isOpen = body.classList.contains('open');
 
-    document.querySelectorAll('.faq-body').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.faq-body').forEach(b => {
+        b.classList.remove('open');
+        b.style.maxHeight = '';
+    });
     document.querySelectorAll('.faq-plus').forEach(ic => {
         ic.classList.remove('open');
-        ic.textContent = '+';
-        ic.style.background = '#F5F6FA';
-        ic.style.color = '#9ca3af';
+        ic.style.background = '#F2F4FA';
+        ic.style.color = '#9A9AB0';
     });
     document.querySelectorAll('.faq-card').forEach(c => c.classList.remove('is-open'));
+    document.querySelectorAll('[id^="faq-btn-"]').forEach(b => b.setAttribute('aria-expanded', 'false'));
 
     if (!isOpen) {
         body.classList.add('open');
+        body.style.maxHeight = body.scrollHeight + 'px';
         icon.classList.add('open');
-        icon.textContent = '×';
         icon.style.background = '#7CC7FF';
         icon.style.color = '#15153A';
         card.classList.add('is-open');
+        btn.setAttribute('aria-expanded', 'true');
     }
 }
 
+// Keep the open panel correctly sized when the layout reflows
+window.addEventListener('resize', () => {
+    const open = document.querySelector('.faq-body.open');
+    if (open) open.style.maxHeight = open.scrollHeight + 'px';
+});
+
 // ── Vision carousel ────────────────────────────────────────
 let visionCurrent = 0;
-const visionTotal  = 5;
-let visionTimer;
+const visionTotal = 5;
+let visionTimer   = null;
+const visionTrack = document.getElementById('vision-carousel');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+function visionRestart() {
+    clearInterval(visionTimer);
+    if (!reduceMotion) visionTimer = setInterval(visionNext, 5000);
+}
 function visionGoTo(n) {
     visionCurrent = n;
-    document.getElementById('vision-carousel').style.transform = `translateX(-${n * 100}%)`;
+    visionTrack.style.transform = `translateX(-${n * 100}%)`;
     document.querySelectorAll('.vision-dot').forEach((dot, i) => {
         dot.classList.toggle('active-vision-dot', i === n);
     });
-    clearInterval(visionTimer);
-    visionTimer = setInterval(visionNext, 4500);
+    visionRestart();
 }
 function visionNext() { visionGoTo((visionCurrent + 1) % visionTotal); }
 function visionPrev() { visionGoTo((visionCurrent - 1 + visionTotal) % visionTotal); }
 
-visionTimer = setInterval(visionNext, 4500);
+visionRestart();
+
+// Stop the carousel while the tab is hidden or it's off-screen
+document.addEventListener('visibilitychange', () => {
+    document.hidden ? clearInterval(visionTimer) : visionRestart();
+});
+new IntersectionObserver(([e]) => {
+    e.isIntersecting ? visionRestart() : clearInterval(visionTimer);
+}, { threshold: 0 }).observe(visionTrack);
+
+
+// ── Scroll reveal ──────────────────────────────────────────
+// Children of a .stagger parent get their delay assigned automatically,
+// so long lists don't need hand-written --d values.
+document.querySelectorAll('.stagger').forEach(parent => {
+    parent.querySelectorAll(':scope > .reveal').forEach((el, i) => {
+        el.style.setProperty('--d', Math.min(i * 0.06, 0.5) + 's');
+    });
+});
+
+const revealAll = () => document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+
+if ('IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('in');
+            revealObserver.unobserve(entry.target);
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // Failsafe: if the observer hasn't fired for anything on screen shortly after
+    // load, show everything rather than risk leaving content invisible.
+    setTimeout(() => {
+        if (!document.querySelector('.reveal.in')) revealAll();
+    }, 1200);
+} else {
+    revealAll();
+}
+
+
+// ── Nav ────────────────────────────────────────────────────
+const nav = document.getElementById('nav');
+let navTicking = false;
+
+function syncNav() {
+    nav.classList.toggle('scrolled', window.scrollY > 12);
+    navTicking = false;
+}
+window.addEventListener('scroll', () => {
+    if (navTicking) return;
+    navTicking = true;
+    requestAnimationFrame(syncNav);
+}, { passive: true });
+syncNav();
+
+// Mobile menu
+const mobToggle = document.getElementById('mob-toggle');
+const mobNav    = document.getElementById('mob-nav');
+
+mobToggle.addEventListener('click', () => {
+    const open = mobNav.classList.toggle('hidden') === false;
+    mobToggle.setAttribute('aria-expanded', String(open));
+    mobToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+});
+// Close the menu after tapping a link
+mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    mobNav.classList.add('hidden');
+    mobToggle.setAttribute('aria-expanded', 'false');
+    mobToggle.setAttribute('aria-label', 'Open menu');
+}));
 
 </script>
 
