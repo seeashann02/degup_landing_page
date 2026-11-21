@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DEGUP</title>
-    <link rel="icon" type="image/png" href="https://github.com/seeashann02/Degup/blob/main/logo-transparent-without%20name.png?raw=true">
+    <link rel="icon" type="image/png" href="https://github.com/seeashann02/degup_pics/blob/main/degup-favicon.png?raw=true">
 
     <script>
         // Opt in to scroll-reveal only when JS is available and motion is welcome.
@@ -438,6 +438,40 @@
         .nav-link:hover::after { transform: scaleX(1); }
 
         /* ══════════════════════════════════════════════════════
+           OFFICIAL WORDMARK
+           The brand asset ships on a 1920x1080 canvas with the
+           artwork at x155-1741, y336-841 — the rest is empty
+           transparent padding. These rules reveal just the
+           artwork; the image itself is never scaled non-uniformly,
+           so proportions stay exactly as supplied.
+        ══════════════════════════════════════════════════════ */
+        .wordmark {
+            --wm-h: 34px;                                   /* artwork height */
+            position: relative;
+            display: block;
+            height: var(--wm-h);
+            width: calc(var(--wm-h) * 1587 / 506);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .wordmark img {
+            position: absolute;
+            width: calc(var(--wm-h) * 1920 / 506);
+            height: auto;
+            max-width: none;
+            left: calc(var(--wm-h) * -155 / 506);
+            top:  calc(var(--wm-h) * -336 / 506);
+        }
+        /* Footer sits on #15153A; the maroon artwork is ~1.3:1 there.
+           This recolours the supplied mark to white without altering
+           its shape so it stays legible. */
+        .wordmark--onDark img { filter: brightness(0) invert(1); }
+
+        @media (max-width: 639px) {
+            .wordmark { --wm-h: 30px; }
+        }
+
+        /* ══════════════════════════════════════════════════════
            HERO
         ══════════════════════════════════════════════════════ */
         /* Slow ken-burns drift — reads as depth, not motion */
@@ -608,11 +642,10 @@
 <nav id="nav" class="nav-shell fixed top-0 left-0 right-0 z-50">
     <div class="nav-inner max-w-6xl mx-auto px-6 sm:px-8 py-[18px] flex items-center justify-between">
         <a href="#" class="flex items-center gap-2.5 group" aria-label="Degup home">
-            <img src="https://github.com/seeashann02/Degup/blob/main/logo-transparent-without%20name.png?raw=true"
-                 alt="" width="36" height="36"
-                 style="width:36px;height:36px;object-fit:contain;flex-shrink:0;transition:transform .34s cubic-bezier(.16,1,.3,1);"
-                 class="group-hover:scale-105">
-            <span class="font-display font-bold text-[1.22rem] tracking-[-.02em]">DEGUP</span>
+            <span class="wordmark group-hover:scale-105"
+                  style="transition:transform .34s cubic-bezier(.16,1,.3,1);">
+                <img src="https://github.com/seeashann02/degup_pics/blob/main/degup-logo.png?raw=true" alt="Degup" referrerpolicy="no-referrer">
+            </span>
         </a>
 
         <div class="hidden md:flex items-center gap-9">
@@ -620,10 +653,10 @@
             <a href="#how-it-works"  class="nav-link">How it works</a>
             <a href="#kidney-health" class="nav-link">Kidney Health</a>
             <a href="#faq"           class="nav-link">FAQ</a>
-            <a href="https://wa.me/601176300502?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda."
+            <a href="https://wa.me/601117353552?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda."
                target="_blank" rel="noopener noreferrer"
                class="btn btn-navy btn-sm">
-                Talk to Us
+                Talk to us
             </a>
         </div>
 
@@ -641,7 +674,7 @@
         <a href="#how-it-works"  class="text-[.95rem] py-3 border-b transition-colors hover:text-navy" style="color:var(--ink-2);border-color:rgba(21,21,58,.05)">How it works</a>
         <a href="#kidney-health" class="text-[.95rem] py-3 border-b transition-colors hover:text-navy" style="color:var(--ink-2);border-color:rgba(21,21,58,.05)">Kidney Health</a>
         <a href="#faq"           class="text-[.95rem] py-3 mb-4 transition-colors hover:text-navy" style="color:var(--ink-2)">FAQ</a>
-        <a href="https://wa.me/601176300502?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda."
+        <a href="https://wa.me/601117353552?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda."
            target="_blank" rel="noopener noreferrer" class="btn btn-navy w-full">Talk to us</a>
     </div>
 </nav>
@@ -663,6 +696,16 @@
     <!-- centered content -->
     <div class="relative z-10 text-center max-w-4xl mx-auto px-6 pt-24 pb-28 md:pt-24 md:pb-32">
 
+        <!-- live badge -->
+        <div class="rise inline-flex items-center gap-2.5 rounded-full px-4 py-2 mb-7 md:mb-9 text-[.78rem] tracking-[.01em]"
+             style="--d:.1s;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);">
+            <span class="relative flex w-2 h-2">
+                <span class="absolute inline-flex w-full h-full rounded-full bg-emerald-400 opacity-70 animate-ping"></span>
+                <span class="relative inline-flex w-2 h-2 rounded-full bg-emerald-400"></span>
+            </span>
+            Helping patients across Malaysia
+        </div>
+
         <h1 class="rise font-display font-bold text-white mb-5 md:mb-7"
             style="--d:.22s;font-size:clamp(2.7rem,1.5rem + 6.2vw,6.4rem);line-height:1.03;letter-spacing:-.05em;text-shadow:0 2px 40px rgba(0,0,0,.35);">
             Connecting with<br>
@@ -677,14 +720,14 @@
         </p>
 
         <div class="rise flex flex-col sm:flex-row gap-3 justify-center items-center" style="--d:.46s;">
-            <a href="https://degup.my/booking"
+            <a href="https://wa.me/601117353552?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda."
                target="_blank" rel="noopener noreferrer"
                class="btn btn-white w-full sm:w-auto">
-                Find a Dialysis Slot
+                Talk to Us
             </a>
-            <a href="https://wa.me/601176300502?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda." target="_blank" rel="noopener noreferrer"
+            <a href="https://www.youtube.com/watch?v=brxf_f5mjm4" target="_blank" rel="noopener noreferrer"
                class="btn btn-glass w-full sm:w-auto">
-                Talk to Us! <span class="btn-arrow">→</span>
+                See our story <span class="btn-arrow">→</span>
             </a>
         </div>
     </div>
@@ -1201,7 +1244,7 @@
             We are connecting with healthcare stakeholders and dialysis providers to redefine care coordination in Malaysia.
         </p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center items-center reveal" style="--d:.2s;">
-            <a href="https://wa.me/601176344216?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda."
+            <a href="https://wa.me/601117353552?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda."
                target="_blank" rel="noopener noreferrer"
                class="btn btn-white w-full sm:w-auto">
                 Talk to us <span class="btn-arrow">→</span>
@@ -1346,7 +1389,7 @@
 
         <!-- CTA row -->
         <div class="text-center reveal">
-            <a href="https://wa.me/601176344216?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda." target="_blank" rel="noopener noreferrer"
+            <a href="https://wa.me/601117353552?text=Hai%20Degup,%20saya%20ingin%20mendapatkan%20maklumat%20lanjut%20mengenai%20perkhidmatan%20anda." target="_blank" rel="noopener noreferrer"
                class="btn btn-navy">
                 Ask us directly <span class="btn-arrow">→</span>
             </a>
@@ -1365,8 +1408,9 @@
             <!-- brand -->
             <div>
                 <div class="flex items-center gap-2.5 mb-4">
-                    <img src="https://github.com/seeashann02/Degup/blob/main/logo-transparent-without%20name.png?raw=true" alt="" width="36" height="36" style="width:36px;height:36px;object-fit:contain;flex-shrink:0;">
-                    <span class="font-display font-bold text-[1.22rem] text-white tracking-[-.02em]">DEGUP</span>
+                    <span class="wordmark wordmark--onDark">
+                        <img src="https://github.com/seeashann02/degup_pics/blob/main/degup-logo.png?raw=true" alt="Degup" referrerpolicy="no-referrer">
+                    </span>
                 </div>
                 <p class="text-sm leading-[1.75] mb-6 max-w-[30ch]" style="color:rgba(255,255,255,.44)">
                     Making dialysis scheduling simpler and easier for patients in Malaysia.
@@ -1412,7 +1456,7 @@
                 <p class="label text-white mb-5">Contacts</p>
                 <ul class="space-y-2.5">
                     <li><a href="mailto:hello@degup.my" class="text-sm transition-colors hover:text-white" style="color:rgba(255,255,255,.44)">hello@degup.my</a></li>
-                    <li><a href="tel:+60132370520"      class="text-sm transition-colors hover:text-white" style="color:rgba(255,255,255,.44)">+60 13 237 0520</a></li>
+                    <li><a href="tel:+601117353552"      class="text-sm transition-colors hover:text-white" style="color:rgba(255,255,255,.44)">+60 11 1735 3552</a></li>
                 </ul>
             </div>
             <!-- location -->
